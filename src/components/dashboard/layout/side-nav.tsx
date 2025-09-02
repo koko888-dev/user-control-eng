@@ -134,10 +134,68 @@ interface NavItemProps extends Omit<NavItemConfig, 'items'> {
   pathname: string;
 }
 
-function NavItem({ disabled, external, href, icon, matcher, pathname, title }: NavItemProps): React.JSX.Element {
+function NavItem({
+  disabled,
+  external,
+  href,
+  icon,
+  matcher,
+  pathname,
+  title,
+  items, // 👈 เพิ่มรับ items ด้วย
+}: NavItemConfig & { pathname: string }): React.JSX.Element {
   const active = isNavItemActive({ disabled, external, href, matcher, pathname });
   const Icon = icon ? navIcons[icon] : null;
+  const [open, setOpen] = React.useState(active); // ถ้า path ตรง ให้เปิดไว้
 
+  // มีเมนูย่อย
+  if (items && items.length > 0) {
+    return (
+      <li>
+        {/* ปุ่มเมนูหลัก */}
+        <Box
+          role="button"
+          onClick={() => setOpen(!open)}
+          sx={{
+            alignItems: 'center',
+            borderRadius: 1,
+            color: 'var(--NavItem-color)',
+            cursor: 'pointer',
+            display: 'flex',
+            gap: 1,
+            p: '6px 16px',
+            ...(active && {
+              bgcolor: 'var(--NavItem-active-background)',
+              color: 'var(--NavItem-active-color)',
+            }),
+          }}
+        >
+          {Icon && (
+            <Icon
+              fill={active ? 'var(--NavItem-icon-active-color)' : 'var(--NavItem-icon-color)'}
+              fontSize="var(--icon-fontSize-md)"
+              weight={active ? 'fill' : undefined}
+            />
+          )}
+          <Typography component="span" sx={{ flex: 1, fontSize: '0.875rem', fontWeight: 500 }}>
+            {title}
+          </Typography>
+          <span>{open ? '▼' : '▶'}</span>
+        </Box>
+
+        {/* เมนูย่อย */}
+        {open && (
+          <Stack component="ul" spacing={0.5} sx={{ listStyle: 'none', pl: 4, mt: 0.5 }}>
+            {items.map(({ key, ...child }: NavItemConfig) => (
+        <NavItem key={key} pathname={pathname} {...child} />
+         ))}
+          </Stack>
+        )}
+      </li>
+    );
+  }
+
+  // ถ้าไม่มีเมนูย่อย → render ลิงก์ปกติ
   return (
     <li>
       <Box
@@ -155,37 +213,29 @@ function NavItem({ disabled, external, href, icon, matcher, pathname, title }: N
           color: 'var(--NavItem-color)',
           cursor: 'pointer',
           display: 'flex',
-          flex: '0 0 auto',
           gap: 1,
           p: '6px 16px',
-          position: 'relative',
           textDecoration: 'none',
-          whiteSpace: 'nowrap',
           ...(disabled && {
-            bgcolor: 'var(--NavItem-disabled-background)',
             color: 'var(--NavItem-disabled-color)',
             cursor: 'not-allowed',
           }),
-          ...(active && { bgcolor: 'var(--NavItem-active-background)', color: 'var(--NavItem-active-color)' }),
+          ...(active && {
+            bgcolor: 'var(--NavItem-active-background)',
+            color: 'var(--NavItem-active-color)',
+          }),
         }}
       >
-        <Box sx={{ alignItems: 'center', display: 'flex', justifyContent: 'center', flex: '0 0 auto' }}>
-          {Icon ? (
-            <Icon
-              fill={active ? 'var(--NavItem-icon-active-color)' : 'var(--NavItem-icon-color)'}
-              fontSize="var(--icon-fontSize-md)"
-              weight={active ? 'fill' : undefined}
-            />
-          ) : null}
-        </Box>
-        <Box sx={{ flex: '1 1 auto' }}>
-          <Typography
-            component="span"
-            sx={{ color: 'inherit', fontSize: '0.875rem', fontWeight: 500, lineHeight: '28px' }}
-          >
-            {title}
-          </Typography>
-        </Box>
+        {Icon && (
+          <Icon
+            fill={active ? 'var(--NavItem-icon-active-color)' : 'var(--NavItem-icon-color)'}
+            fontSize="var(--icon-fontSize-md)"
+            weight={active ? 'fill' : undefined}
+          />
+        )}
+        <Typography component="span" sx={{ fontSize: '0.875rem', fontWeight: 500 }}>
+          {title}
+        </Typography>
       </Box>
     </li>
   );
