@@ -183,7 +183,6 @@ function NavItem({
           <span>{open ? '▼' : '▶'}</span>
         </Box>
 
-        {/* เมนูย่อย */}
         {open && (
           <Stack component="ul" spacing={0.5} sx={{ listStyle: 'none', pl: 4, mt: 0.5 }}>
             {items.map(({ key, ...child }: NavItemConfig) => (
