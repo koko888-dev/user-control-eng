@@ -2,6 +2,7 @@ import * as React from 'react';
 import type { Metadata } from 'next';
 import Grid from '@mui/material/Grid';
 import dayjs from 'dayjs';
+import Divider from '@mui/material/Divider';
 
 import { config } from '@/config';
 import { Budget } from '@/components/dashboard/overview/budget';
@@ -18,6 +19,39 @@ export const metadata = { title: `Overview | Dashboard | ${config.site.name}` } 
 export default function Page(): React.JSX.Element {
   return (
     <Grid container spacing={3}>
+      <Grid size={{xs: 12}}>
+        <Divider textAlign="left" sx={{ my: 4 }}>
+          ระบบบุคลากร
+        </Divider>
+      </Grid>
+      <Grid
+        size={{
+          lg: 6,
+          sm: 6,
+          xs: 12,
+        }}
+      >
+        
+        <TotalCustomers diff={16} trend="down" sx={{ height: '100%' }} value="ผู้ใช้งานระบบ" />
+      </Grid>
+      
+      <Grid
+        size={{
+          lg: 6,
+          sm: 6,
+          xs: 12,
+        }}
+      >
+
+        <TotalCustomers diff={16} trend="down" sx={{ height: '100%' }} value="ผู้ดูเเลระบบ" />
+      </Grid>
+
+      <Grid size={{xs: 12}}>
+        <Divider textAlign="left" sx={{ my: 4 }}>
+          ระบบลา
+        </Divider>
+      </Grid>
+
       <Grid
         size={{
           lg: 3,
@@ -27,6 +61,7 @@ export default function Page(): React.JSX.Element {
       >
         <TotalCustomers diff={16} trend="down" sx={{ height: '100%' }} value="ผู้ใช้งานระบบ" />
       </Grid>
+
       <Grid
         size={{
           lg: 3,
@@ -34,7 +69,85 @@ export default function Page(): React.JSX.Element {
           xs: 12,
         }}
       >
-        <TotalCustomers diff={16} trend="down" sx={{ height: '100%' }} value="ผู้ดูแลระบบ" />
+        <TotalCustomers diff={16} trend="down" sx={{ height: '100%' }} value="ผู้ดูเเลระบบ" />
+      </Grid>
+
+      <Grid
+        size={{
+          lg: 3,
+          sm: 6,
+          xs: 12,
+        }}
+      >
+        <TotalCustomers diff={16} trend="down" sx={{ height: '100%' }} value="ผู้อนุมัติอันดับที่ 1" />
+      </Grid>
+
+      <Grid
+        size={{
+          lg: 3,
+          sm: 6,
+          xs: 12,
+        }}
+      >
+        <TotalCustomers diff={16} trend="down" sx={{ height: '100%' }} value="ผู้อนุมัติอันดับที่ 2" />
+      </Grid>
+      
+      <Grid size={{xs: 12}}>
+        <Divider textAlign="left" sx={{ my: 4 }}>
+          ระบบใช้รถ
+        </Divider>
+      </Grid>
+
+      <Grid
+        size={{
+          lg: 3,
+          sm: 6,
+          xs: 12,
+        }}
+      >
+        <TotalCustomers diff={16} trend="down" sx={{ height: '100%' }} value="ผู้ใช้งานระบบ" />
+      </Grid>
+
+      <Grid
+        size={{
+          lg: 3,
+          sm: 6,
+          xs: 12,
+        }}
+      >
+        <TotalCustomers diff={16} trend="down" sx={{ height: '100%' }} value="ผู้ดูเเลระบบ" />
+      </Grid>
+
+      <Grid
+        size={{
+          lg: 3,
+          sm: 6,
+          xs: 12,
+        }}
+      >
+        <TotalCustomers diff={16} trend="down" sx={{ height: '100%' }} value="ผู้อนุมัติอันดับที่ 1" />
+      </Grid>
+
+      <Grid
+        size={{
+          lg: 3,
+          sm: 6,
+          xs: 12,
+        }}
+      >
+        <TotalCustomers diff={16} trend="down" sx={{ height: '100%' }} value="ผู้อนุมัติอันดับที่ 2" />
+      </Grid>
+    
+      
+
+    </Grid>
+  );
+}
+
+        
+        
+      
+        {/*<Budget diff={12} trend="up" sx={{ height: '100%' }} value="$24k" />
       </Grid>
       <Grid
         size={{
@@ -43,6 +156,7 @@ export default function Page(): React.JSX.Element {
           xs: 12,
         }}
       >
+
         <TasksProgress sx={{ height: '100%' }} value={75.5} />
       </Grid>
       <Grid
@@ -173,8 +287,4 @@ export default function Page(): React.JSX.Element {
             },
           ]}
           sx={{ height: '100%' }}
-        />
-      </Grid>
-    </Grid>
-  );
-}
+        />*/}
