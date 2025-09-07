@@ -109,7 +109,7 @@ const customers = [
   },
 ] satisfies Customer[];
 
-export default function Page(): React.JSX.Element {
+export default function UsersAllPage(): React.JSX.Element {
   const page = 0;
   const rowsPerPage = 5;
 
@@ -119,7 +119,7 @@ export default function Page(): React.JSX.Element {
     <Stack spacing={3}>
       <Stack direction="row" spacing={3}>
         <Stack spacing={1} sx={{ flex: '1 1 auto' }}>
-          <Typography variant="h4">Customers</Typography>
+          <Typography variant="h4">ผู้ใช้งานระบบ</Typography>
           <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
             <Button color="inherit" startIcon={<UploadIcon fontSize="var(--icon-fontSize-md)" />}>
               Import

@@ -3,8 +3,9 @@ export const paths = {
   auth: { signIn: '/auth/sign-in', signUp: '/auth/sign-up', resetPassword: '/auth/reset-password' },
   dashboard: {
     overview: '/dashboard',
+    main:'/dashboard/mainpage',
     account: '/dashboard/account',
-    usersAll: '/dashboard/users',
+    usersAll: '/dashboard/users/userall',
     usersPending: '/dashboard/users/pending',
     // customers: '/dashboard/customers',
     integrations: '/dashboard/integrations',

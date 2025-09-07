@@ -2,7 +2,7 @@ import type { NavItemConfig } from '@/types/nav';
 import { paths } from '@/paths';
 
 export const navItems = [
-  { key: 'home', title: 'หน้าหลัก', href: paths.dashboard.overview, icon: 'chart-pie' },
+  { key: 'home', title: 'หน้าหลัก', href: paths.dashboard.main, icon: 'chart-pie' },
    {
     key: 'users',
     title: 'ผู้ใช้งาน',

@@ -1,6 +1,14 @@
+"use client";
 import * as React from 'react';
 import type { Metadata } from 'next';
-import Grid from '@mui/material/Grid';
+import {
+  Box,
+  Stack,
+  Grid,
+  Typography,
+  TextField,
+  Button,
+} from "@mui/material";
 import dayjs from 'dayjs';
 import Divider from '@mui/material/Divider';
 
@@ -14,10 +22,46 @@ import { TotalCustomers } from '@/components/dashboard/overview/total-customers'
 import { TotalProfit } from '@/components/dashboard/overview/total-profit';
 import { Traffic } from '@/components/dashboard/overview/traffic';
 
-export const metadata = { title: `Overview | Dashboard | ${config.site.name}` } satisfies Metadata;
+
 
 export default function Page(): React.JSX.Element {
+  const [formValues, setFormValues] = React.useState({ thaiName: '' });
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormValues({ ...formValues, [e.target.name]: e.target.value });
+  };
+
   return (
+    <Box sx={{ p: 2 }}>
+    <Stack direction="column" spacing={2} sx={{ width: '100%' }}>
+      {/* Title */}
+      <Grid container>
+        <Grid size={{ lg: 6, sm: 6, xs: 12 }}>
+          <Typography variant="h6" sx={{ mt: 0, mb: 0, fontSize: 18, fontWeight: 'bold' }}>
+            ระบบที่สามารถเข้าถึงได้
+          </Typography>
+        </Grid>
+      </Grid>
+
+      <Grid container spacing={2} alignItems="center">
+          <Grid size={{ xs :12 , sm: 6}}>
+            <TextField
+              fullWidth
+              name="thaiName"
+              placeholder="ชื่อระบบ"
+              value={formValues.thaiName}
+              onChange={handleChange}
+              size="small"
+            />
+          </Grid>
+          <Grid size={{ xs :12 , sm: 6}}>
+            <Button variant="contained" color="primary" >
+              ค้นหา
+            </Button>
+          </Grid>
+        </Grid>
+    
+
     <Grid container spacing={3}>
       <Grid size={{xs: 12}}>
         <Divider textAlign="left" sx={{ my: 4 }}>
@@ -139,8 +183,11 @@ export default function Page(): React.JSX.Element {
       </Grid>
     
       
-
+      
     </Grid>
+    </Stack>
+    </Box>
+
   );
 }
 

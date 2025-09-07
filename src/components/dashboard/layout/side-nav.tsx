@@ -15,7 +15,7 @@ import type { NavItemConfig } from '@/types/nav';
 import { paths } from '@/paths';
 import { isNavItemActive } from '@/lib/is-nav-item-active';
 import { Logo } from '@/components/core/logo';
-
+import * as Icons from "lucide-react";
 import { navItems } from './config';
 import { navIcons } from './nav-icons';
 
@@ -51,8 +51,15 @@ export function SideNav(): React.JSX.Element {
       }}
     >
       <Stack spacing={2} sx={{ p: 3 }}>
-        <Box component={RouterLink} href={paths.home} sx={{ display: 'inline-flex' }}>
-          <Logo color="light" height={32} width={122} />
+        <Box component={RouterLink} href={paths.home} sx={{ display: 'inline-flex',textDecoration: "none", // ❌ เอาเส้นใต้ลิงก์ออก
+      color: "white",         }}>
+          {/*<Logo color="light" height={32} width={122} />*/}
+          <Icons.MonitorCog width={60} height={60} color="#ffffff" />
+          <Typography variant="h6" sx={{ mt: 1, mb: 0,ml:1, fontSize: 18, fontWeight: 'bold' }}>
+          ระบบอินทราเน็ต
+          ภายในองค์กร
+          </Typography>
+          
         </Box>
      
           
@@ -133,7 +140,7 @@ function NavItem({
           <Typography component="span" sx={{ flex: 1, fontSize: '0.875rem', fontWeight: 500 }}>
             {title}
           </Typography>
-          <span>{open ? '▼' : '▶'}</span>
+          <span>{open ? '*' : '*'}</span>
         </Box>
 
         {open && (
