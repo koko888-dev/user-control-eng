@@ -8,9 +8,15 @@ export const navItems = [
     title: 'ผู้ใช้งาน',
     icon: 'users',
     items: [
-      { key: 'users-all',     title: 'ผู้ใช้งานทั้งหมด',  href: paths.dashboard.usersAll,     icon: 'user-list',
+      { key: 'users-all',     
+        title: 'ผู้ใช้งานทั้งหมด',  
+        href: paths.dashboard.usersAll,     
+        icon: 'user-list',
         matcher: { type: 'startsWith', href: paths.dashboard.usersAll } },
-      { key: 'users-pending', title: 'ผู้ใช้งานรออนุมัติ', href: paths.dashboard.usersPending, icon: 'user-clock' },
+      { key: 'users-pending', 
+        title: 'ผู้ใช้งานรออนุมัติ', 
+        href: paths.dashboard.usersPending, 
+        icon: 'user-clock' },
     ],
   },
   
