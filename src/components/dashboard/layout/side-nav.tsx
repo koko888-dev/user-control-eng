@@ -102,7 +102,7 @@ function NavItem({
   matcher,
   pathname,
   title,
-  items, // 👈 เพิ่มรับ items ด้วย
+  items, 
 }: NavItemConfig & { pathname: string }): React.JSX.Element {
   const active = isNavItemActive({ disabled, external, href, matcher, pathname });
   const Icon = icon ? navIcons[icon] : null;

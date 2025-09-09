@@ -32,7 +32,7 @@ export default function Page(): React.JSX.Element {
   };
 
   return (
-    <Box sx={{ p: 2 }}>
+    <Box sx={{ p: 10 }}>
     <Stack direction="column" spacing={2} sx={{ width: '100%' }}>
       {/* Title */}
       <Grid container>
@@ -70,7 +70,7 @@ export default function Page(): React.JSX.Element {
       </Grid>
       <Grid
         size={{
-          lg: 6,
+          lg: 2.5,
           sm: 6,
           xs: 12,
         }}
@@ -81,7 +81,7 @@ export default function Page(): React.JSX.Element {
       
       <Grid
         size={{
-          lg: 6,
+          lg: 2.5,
           sm: 6,
           xs: 12,
         }}
@@ -98,7 +98,7 @@ export default function Page(): React.JSX.Element {
 
       <Grid
         size={{
-          lg: 3,
+          lg: 2.5,
           sm: 6,
           xs: 12,
         }}
@@ -108,7 +108,7 @@ export default function Page(): React.JSX.Element {
 
       <Grid
         size={{
-          lg: 3,
+          lg: 2.5,
           sm: 6,
           xs: 12,
         }}
@@ -118,7 +118,7 @@ export default function Page(): React.JSX.Element {
 
       <Grid
         size={{
-          lg: 3,
+          lg: 2.5,
           sm: 6,
           xs: 12,
         }}
@@ -128,7 +128,7 @@ export default function Page(): React.JSX.Element {
 
       <Grid
         size={{
-          lg: 3,
+          lg: 2.5,
           sm: 6,
           xs: 12,
         }}
@@ -144,7 +144,7 @@ export default function Page(): React.JSX.Element {
 
       <Grid
         size={{
-          lg: 3,
+          lg: 2.5,
           sm: 6,
           xs: 12,
         }}
@@ -154,7 +154,7 @@ export default function Page(): React.JSX.Element {
 
       <Grid
         size={{
-          lg: 3,
+          lg: 2.5,
           sm: 6,
           xs: 12,
         }}
@@ -164,7 +164,7 @@ export default function Page(): React.JSX.Element {
 
       <Grid
         size={{
-          lg: 3,
+          lg: 2.5,
           sm: 6,
           xs: 12,
         }}
@@ -174,7 +174,7 @@ export default function Page(): React.JSX.Element {
 
       <Grid
         size={{
-          lg: 3,
+          lg: 2.5,
           sm: 6,
           xs: 12,
         }}
