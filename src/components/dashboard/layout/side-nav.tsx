@@ -9,7 +9,7 @@ import Divider from '@mui/material/Divider';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { ArrowSquareUpRightIcon } from '@phosphor-icons/react/dist/ssr/ArrowSquareUpRight';
-import { CaretUpDownIcon } from '@phosphor-icons/react/dist/ssr/CaretUpDown';
+import { ChevronDown } from 'lucide-react';
 
 import type { NavItemConfig } from '@/types/nav';
 import { paths } from '@/paths';
@@ -18,6 +18,8 @@ import { Logo } from '@/components/core/logo';
 import * as Icons from "lucide-react";
 import { navItems } from './config';
 import { navIcons } from './nav-icons';
+import Collapse from '@mui/material/Collapse';
+
 
 export function SideNav(): React.JSX.Element {
   const pathname = usePathname();
@@ -102,12 +104,24 @@ function NavItem({
   matcher,
   pathname,
   title,
-  items, // 👈 เพิ่มรับ items ด้วย
+  items, 
 }: NavItemConfig & { pathname: string }): React.JSX.Element {
   const active = isNavItemActive({ disabled, external, href, matcher, pathname });
   const Icon = icon ? navIcons[icon] : null;
-  const [open, setOpen] = React.useState(active); // ถ้า path ตรง ให้เปิดไว้
+  const childActive =
+  Array.isArray(items) &&
+  items.some((child) =>
+    isNavItemActive({
+      disabled: child.disabled,
+      external: child.external,
+      href: child.href,
+      matcher: child.matcher,
+      pathname,
+    })
+  );
 
+// ถ้าเมนูนี้ active เอง หรือมีลูก active → เปิดไว้
+const [open, setOpen] = React.useState(active || childActive);
   // มีเมนูย่อย
   if (items && items.length > 0) {
     return (
@@ -140,16 +154,24 @@ function NavItem({
           <Typography component="span" sx={{ flex: 1, fontSize: '0.875rem', fontWeight: 500 }}>
             {title}
           </Typography>
-          <span>{open ? '*' : '*'}</span>
+          <ChevronDown
+            size={18}
+            strokeWidth={2.5}
+            style={{
+              transition: 'transform 200ms ease',   // เวลา + easing
+              transform: open ? 'rotate(180deg)' : 'rotate(0deg)', // หมุน 180 องศา
+          }}
+          />
+
         </Box>
 
-        {open && (
+        <Collapse in={open} timeout="auto" unmountOnExit>
           <Stack component="ul" spacing={0.5} sx={{ listStyle: 'none', pl: 4, mt: 0.5 }}>
-            {items.map(({ key, ...child }: NavItemConfig) => (
-        <NavItem key={key} pathname={pathname} {...child} />
-         ))}
+                {items.map(({ key, ...child }: NavItemConfig) => (
+                  <NavItem key={key} pathname={pathname} {...child} />
+                 ))}
           </Stack>
-        )}
+        </Collapse> 
       </li>
     );
   }
