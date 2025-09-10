@@ -19,7 +19,7 @@ import { useRouter } from "next/navigation";
 import * as Icons from "lucide-react";
 import { convertDateTimeFormate, convertDateTimeToNumber } from "@/app/utils";
 
-export default function UserIndexPage() {
+export default function pendingApprovalUserIndexPage() {
   const { Title } = Typography;
   const [form] = Form.useForm();
   const router = useRouter();
@@ -41,7 +41,7 @@ export default function UserIndexPage() {
 
   const columns: TableProps["columns"] = [
     {
-      title: "ไอดี",
+      title: "ไอดีผู้ใช้งาน",
       dataIndex: "id",
       key: "id",
       align: "center",
@@ -78,7 +78,17 @@ export default function UserIndexPage() {
       sorter: (a, b) => a.surname.length - b.surname.length,
     },
     {
-      title: "แก้ไขล่าสุด",
+      title: "ku mail",
+      onHeaderCell: () => {
+        return { style: { textAlign: "center" } }; // Center-align the header
+      },
+      align: "left",
+      dataIndex: "kuMail",
+      key: "kuMail",
+      sorter: (a, b) => a.kuMail.length - b.kuMail.length,
+    },
+    {
+      title: "ยื่นขอเมื่อ",
       align: "center",
       dataIndex: "updatedAt",
       key: "updatedAt",
@@ -106,14 +116,13 @@ export default function UserIndexPage() {
               alignItems: "center",
             }}>
             <Col span={8}>
-              <Tooltip title="Detail">
-                <Icons.BookOpenText
-                  onClick={() => {
-                    setLoading(true);
-                    router.push(`/private/user/${record.uid}`);
-                  }}
-                  size={16}
-                />
+              <Tooltip title="confirm">
+                <Icons.Check size={16} />
+              </Tooltip>
+            </Col>
+            <Col span={8}>
+              <Tooltip title="reject">
+                <Icons.X size={16} />
               </Tooltip>
             </Col>
           </Row>
@@ -122,7 +131,7 @@ export default function UserIndexPage() {
     },
   ];
 
-  const fetchUsers = async () => {
+  const fetchpendingApprovalUsers = async () => {
     try {
       const data = {
         data: [
@@ -257,7 +266,7 @@ export default function UserIndexPage() {
 
   useEffect(() => {
     setTableLoading(true);
-    fetchUsers();
+    fetchpendingApprovalUsers();
   }, [currentPage, currentSearch]);
 
   return (
@@ -272,7 +281,7 @@ export default function UserIndexPage() {
                   marginBottom: 0,
                   fontSize: 18,
                 }}>
-                {"ผู้ใช้งานระบบ"}
+                {"ผู้ใช้งานรอพิจารณา"}
               </Title>
             </Col>
           </Row>
@@ -306,19 +315,6 @@ export default function UserIndexPage() {
                     </Button>
                   </Col>
                 </Form>
-              </Col>
-              <Col
-                span={8}
-                style={{ display: "flex", justifyContent: "right" }}>
-                <Button
-                  className="chemds-button"
-                  type="primary"
-                  onClick={() => {
-                    setLoading(true);
-                    router.push(`/private/user/new`);
-                  }}>
-                  เพิ่ม
-                </Button>
               </Col>
             </Row>
             <Row style={{ marginBottom: "1%" }}>
