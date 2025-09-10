@@ -116,12 +116,12 @@ export default function pendingApprovalUserIndexPage() {
               alignItems: "center",
             }}>
             <Col span={8}>
-              <Tooltip title="confirm">
+              <Tooltip title="ยอมรับ">
                 <Icons.Check size={16} />
               </Tooltip>
             </Col>
             <Col span={8}>
-              <Tooltip title="reject">
+              <Tooltip title="ปฏิเสธ">
                 <Icons.X size={16} />
               </Tooltip>
             </Col>

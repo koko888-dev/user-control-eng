@@ -106,7 +106,7 @@ export default function UserIndexPage() {
               alignItems: "center",
             }}>
             <Col span={8}>
-              <Tooltip title="Detail">
+              <Tooltip title="รายละเอียด">
                 <Icons.BookOpenText
                   onClick={() => {
                     setLoading(true);
