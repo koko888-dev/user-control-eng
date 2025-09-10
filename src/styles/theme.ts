@@ -8,24 +8,33 @@ export const theme = createTheme({
   shape: { borderRadius: 8 },
   palette: {
     mode: 'light',
-    primary: { main: '#1976d2' },
+    primary: { main: '#335c67' }, // ปุ่ม primary (เดิมคือ Submit)
     background: {
-      default: '#ffffff',
-      paper: '#ffffff',
+      default: '#000000', // พื้นหลังนอกสุด (body)
+      paper:   '#FFFFFF', // ใช้กับ Main / Card / Paper
     },
     text: { primary: '#000000' },
   },
   components: {
+    // ให้ body เป็น #F2F2F2 เสมอ
     MuiCssBaseline: {
       styleOverrides: {
-        body: { backgroundColor: '#FFfffF' },
+        body: { backgroundColor: '#F2F2F2', color: '#000000' },
       },
     },
-    MuiDrawer: {
+    // Header ให้ขาว + เส้นคั่นบาง (ถ้าใช้ AppBar)
+    MuiAppBar: {
+      defaultProps: { color: 'default', position: 'fixed' },
       styleOverrides: {
-        paper: { backgroundColor: '#1f2633', color: '#FFFFFF' },
+        root: {
+          backgroundColor: '#FFFFFF',
+          color: '#000000',
+          boxShadow: 'none',
+          borderBottom: '1px solid rgba(0,0,0,0.08)',
+        },
       },
     },
+    // หัวตารางเทาอ่อนเหมือนเดิม
     MuiTableHead: {
       styleOverrides: {
         root: {
@@ -37,11 +46,10 @@ export const theme = createTheme({
         },
       },
     },
+    // ปุ่ม primary
     MuiButton: {
       defaultProps: { disableElevation: true },
-      styleOverrides: {
-        root: { textTransform: 'none', fontWeight: 600 },
-      },
+      styleOverrides: { root: { textTransform: 'none', fontWeight: 600 } },
       variants: [
         {
           props: { variant: 'contained', color: 'primary' },

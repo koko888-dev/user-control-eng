@@ -1,354 +1,152 @@
-"use client";
-import { useEffect, useState } from "react";
-import {
-  Button,
-  Col,
-  Form,
-  Input,
-  Pagination,
-  PaginationProps,
-  Row,
-  Space,
-  Table,
-  TableProps,
-  Typography,
-  Tooltip,
-  InputNumber,
-} from "antd";
-import { useRouter } from "next/navigation";
-import * as Icons from "lucide-react";
-import { convertDateTimeFormate, convertDateTimeToNumber } from "@/app/utils";
+import * as React from 'react';
+import type { Metadata } from 'next';
+import Button from '@mui/material/Button';
+import Stack from '@mui/material/Stack';
+import Typography from '@mui/material/Typography';
+import { DownloadIcon } from '@phosphor-icons/react/dist/ssr/Download';
+import { PlusIcon } from '@phosphor-icons/react/dist/ssr/Plus';
+import { UploadIcon } from '@phosphor-icons/react/dist/ssr/Upload';
+import dayjs from 'dayjs';
 
-export default function UserIndexPage() {
-  const { Title } = Typography;
-  const [form] = Form.useForm();
-  const router = useRouter();
-  const [loading, setLoading] = useState(true);
-  const [tableLoading, setTableLoading] = useState(true);
-  const [currentPage, setCurrentPage] = useState<number>(1);
-  const [users, setUsers] = useState<UserList>({
-    data: [],
-    page: 0,
-    totalPage: 1,
-    limit: 0,
-    totalCount: 0,
-  });
-  const [currentSearch, setcurrentSearch] = useState({
-    nontriAccount: "",
-    name: "",
-    surname: "",
-  });
+import { config } from '@/config';
+import { CustomersFilters } from '@/components/dashboard/customer/customers-filters';
+import { CustomersTable } from '@/components/dashboard/customer/customers-table';
+import type { Customer } from '@/components/dashboard/customer/customers-table';
 
-  const columns: TableProps["columns"] = [
-    {
-      title: "ไอดี",
-      dataIndex: "id",
-      key: "id",
-      align: "center",
-      sorter: (a, b) => a.id - b.id,
-    },
-    {
-      title: "บัญชีนนทรี",
-      onHeaderCell: () => {
-        return { style: { textAlign: "center" } }; // Center-align the header
-      },
-      align: "left",
-      dataIndex: "nontriAccount",
-      key: "nontriAccount",
-      sorter: (a, b) => a.nontriAccount.length - b.nontriAccount.length,
-    },
-    {
-      title: "ชื่อ",
-      onHeaderCell: () => {
-        return { style: { textAlign: "center" } }; // Center-align the header
-      },
-      align: "left",
-      dataIndex: "name",
-      key: "name",
-      sorter: (a, b) => a.name.length - b.name.length,
-    },
-    {
-      title: "นามสกุล",
-      onHeaderCell: () => {
-        return { style: { textAlign: "center" } }; // Center-align the header
-      },
-      align: "left",
-      dataIndex: "surname",
-      key: "surname",
-      sorter: (a, b) => a.surname.length - b.surname.length,
-    },
-    {
-      title: "แก้ไขล่าสุด",
-      align: "center",
-      dataIndex: "updatedAt",
-      key: "updatedAt",
-      sorter: (a, b) =>
-        convertDateTimeToNumber(a.updatedAt) -
-        convertDateTimeToNumber(b.updatedAt),
-      render: (_, record) => {
-        return convertDateTimeFormate(record.updatedAt);
-      },
-    },
-    {
-      title: "",
-      key: "id",
-      dataIndex: "id",
-      align: "center",
-      width: "10%",
-      render: (_, record) => {
-        return (
-          <Row
-            gutter={[16, 16]}
-            style={{
-              textAlign: "center",
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-            }}>
-            <Col span={8}>
-              <Tooltip title="Detail">
-                <Icons.BookOpenText
-                  onClick={() => {
-                    setLoading(true);
-                    router.push(`/private/user/${record.uid}`);
-                  }}
-                  size={16}
-                />
-              </Tooltip>
-            </Col>
-          </Row>
-        );
-      },
-    },
-  ];
+export const metadata = { title: `Customers | Dashboard | ${config.site.name}` } satisfies Metadata;
 
-  const fetchUsers = async () => {
-    try {
-      const data = {
-        data: [
-          {
-            id: 1,
-            uid: "xxx",
-            nontriAccount: "nattapong01",
-            name: "ณัฐพงศ์",
-            surname: "ศรีสุข",
-            kuMail: "nattapong01@example.com",
-            updatedAt: "2025-07-03T10:15:23Z",
-            createdAt: "2025-07-03T10:15:23Z",
-          },
-          {
-            id: 2,
-            uid: "xxx",
-            nontriAccount: "arisa_kt",
-            name: "อริสา",
-            surname: "เกตุแก้ว",
-            kuMail: "arisa.kt@example.com",
-            updatedAt: "2025-07-03T10:17:45Z",
-            createdAt: "2025-07-03T10:15:23Z",
-          },
-          {
-            id: 3,
-            uid: "xxx",
-            nontriAccount: "beam_rk",
-            name: "พีรภัทร",
-            surname: "รักดี",
-            kuMail: "beam.rk@example.com",
-            updatedAt: "2025-07-03T10:18:12Z",
-            createdAt: "2025-07-03T10:15:23Z",
-          },
-          {
-            id: 4,
-            uid: "xxx",
-            nontriAccount: "fonny_89",
-            name: "น้ำฝน",
-            surname: "ธรรมรักษ์",
-            kuMail: "fonny89@example.com",
-            updatedAt: "2025-07-03T10:20:08Z",
-            createdAt: "2025-07-03T10:15:23Z",
-          },
-          {
-            id: 5,
-            uid: "xxx",
-            nontriAccount: "meechai_dev",
-            name: "มีชัย",
-            surname: "สารวัตร",
-            kuMail: "meechai.dev@example.com",
-            updatedAt: "2025-07-03T10:21:50Z",
-            createdAt: "2025-07-03T10:15:23Z",
-          },
-          {
-            id: 6,
-            uid: "xxx",
-            nontriAccount: "piyada_sky",
-            name: "ปิยะดา",
-            surname: "เมฆขลา",
-            kuMail: "piyada.sky@example.com",
-            updatedAt: "2025-07-03T10:22:33Z",
-            createdAt: "2025-07-03T10:15:23Z",
-          },
-          {
-            id: 7,
-            uid: "xxx",
-            nontriAccount: "tonkla_ch",
-            name: "ต้นกล้า",
-            surname: "ชัยวัฒน์",
-            kuMail: "tonkla.ch@example.com",
-            updatedAt: "2025-07-03T10:24:01Z",
-            createdAt: "2025-07-03T10:15:23Z",
-          },
-          {
-            id: 8,
-            uid: "xxx",
-            nontriAccount: "noon_lovely",
-            name: "นุ่น",
-            surname: "รัตนโกสินทร์",
-            kuMail: "noon.lovely@example.com",
-            updatedAt: "2025-07-03T10:25:14Z",
-            createdAt: "2025-07-03T10:15:23Z",
-          },
-          {
-            id: 9,
-            uid: "xxx",
-            nontriAccount: "krit_sr",
-            name: "กฤต",
-            surname: "ศิริเวช",
-            kuMail: "krit.sr@example.com",
-            updatedAt: "2025-07-03T10:27:09Z",
-            createdAt: "2025-07-03T10:15:23Z",
-          },
-          {
-            id: 10,
-            uid: "xxx",
-            nontriAccount: "junezaza",
-            name: "จูน",
-            surname: "อินทรโชติ",
-            kuMail: "junezaza@example.com",
-            updatedAt: "2025-07-03T10:28:56Z",
-            createdAt: "2025-07-03T10:15:23Z",
-          },
-        ],
-        page: 1,
-        totalPage: 1,
-        limit: 10,
-        totalCount: 10,
-      };
-      setUsers(data);
-      setLoading(false);
-      setTableLoading(false);
-    } catch (error) {
-      console.log("error: ", error);
-      setLoading(false);
-      setTableLoading(false);
-    }
-  };
+const customers = [
+  {
+    id: 'USR-010',
+    name: 'Alcides Antonio',
+    avatar: '/assets/avatar-10.png',
+    email: 'alcides.antonio@devias.io',
+    phone: '908-691-3242',
+    address: { city: 'Madrid', country: 'Spain', state: 'Comunidad de Madrid', street: '4158 Hedge Street' },
+    createdAt: dayjs().subtract(2, 'hours').toDate(),
+  },
+  {
+    id: 'USR-009',
+    name: 'Marcus Finn',
+    avatar: '/assets/avatar-9.png',
+    email: 'marcus.finn@devias.io',
+    phone: '415-907-2647',
+    address: { city: 'Carson City', country: 'USA', state: 'Nevada', street: '2188 Armbrester Drive' },
+    createdAt: dayjs().subtract(2, 'hours').toDate(),
+  },
+  {
+    id: 'USR-008',
+    name: 'Jie Yan',
+    avatar: '/assets/avatar-8.png',
+    email: 'jie.yan.song@devias.io',
+    phone: '770-635-2682',
+    address: { city: 'North Canton', country: 'USA', state: 'Ohio', street: '4894 Lakeland Park Drive' },
+    createdAt: dayjs().subtract(2, 'hours').toDate(),
+  },
+  {
+    id: 'USR-007',
+    name: 'Nasimiyu Danai',
+    avatar: '/assets/avatar-7.png',
+    email: 'nasimiyu.danai@devias.io',
+    phone: '801-301-7894',
+    address: { city: 'Salt Lake City', country: 'USA', state: 'Utah', street: '368 Lamberts Branch Road' },
+    createdAt: dayjs().subtract(2, 'hours').toDate(),
+  },
+  {
+    id: 'USR-006',
+    name: 'Iulia Albu',
+    avatar: '/assets/avatar-6.png',
+    email: 'iulia.albu@devias.io',
+    phone: '313-812-8947',
+    address: { city: 'Murray', country: 'USA', state: 'Utah', street: '3934 Wildrose Lane' },
+    createdAt: dayjs().subtract(2, 'hours').toDate(),
+  },
+  {
+    id: 'USR-005',
+    name: 'Fran Perez',
+    avatar: '/assets/avatar-5.png',
+    email: 'fran.perez@devias.io',
+    phone: '712-351-5711',
+    address: { city: 'Atlanta', country: 'USA', state: 'Georgia', street: '1865 Pleasant Hill Road' },
+    createdAt: dayjs().subtract(2, 'hours').toDate(),
+  },
 
-  const onPageChange: PaginationProps["onChange"] = (pageNumber) => {
-    setCurrentPage(pageNumber);
-  };
+  {
+    id: 'USR-004',
+    name: 'Penjani Inyene',
+    avatar: '/assets/avatar-4.png',
+    email: 'penjani.inyene@devias.io',
+    phone: '858-602-3409',
+    address: { city: 'Berkeley', country: 'USA', state: 'California', street: '317 Angus Road' },
+    createdAt: dayjs().subtract(2, 'hours').toDate(),
+  },
+  {
+    id: 'USR-003',
+    name: 'Carson Darrin',
+    avatar: '/assets/avatar-3.png',
+    email: 'carson.darrin@devias.io',
+    phone: '304-428-3097',
+    address: { city: 'Cleveland', country: 'USA', state: 'Ohio', street: '2849 Fulton Street' },
+    createdAt: dayjs().subtract(2, 'hours').toDate(),
+  },
+  {
+    id: 'USR-002',
+    name: 'Siegbert Gottfried',
+    avatar: '/assets/avatar-2.png',
+    email: 'siegbert.gottfried@devias.io',
+    phone: '702-661-1654',
+    address: { city: 'Los Angeles', country: 'USA', state: 'California', street: '1798 Hickory Ridge Drive' },
+    createdAt: dayjs().subtract(2, 'hours').toDate(),
+  },
+  {
+    id: 'USR-001',
+    name: 'Miron Vitold',
+    avatar: '/assets/avatar-1.png',
+    email: 'miron.vitold@devias.io',
+    phone: '972-333-4106',
+    address: { city: 'San Diego', country: 'USA', state: 'California', street: '75247' },
+    createdAt: dayjs().subtract(2, 'hours').toDate(),
+  },
+] satisfies Customer[];
 
-  const onSearch = () => {
-    setcurrentSearch({
-      nontriAccount: form.getFieldValue("nontriAccount"),
-      name: form.getFieldValue("name"),
-      surname: form.getFieldValue("surname"),
-    });
-    setCurrentPage(1);
-  };
+export default function UsersPendingPage(): React.JSX.Element {
+  const page = 0;
+  const rowsPerPage = 5;
 
-  useEffect(() => {
-    setTableLoading(true);
-    fetchUsers();
-  }, [currentPage, currentSearch]);
+  const paginatedCustomers = applyPagination(customers, page, rowsPerPage);
 
   return (
-    <>
-      <div style={{ padding: 10 }}>
-        <Space direction="vertical" style={{ width: "100%" }} size={10}>
-          <Row>
-            <Col span={12}>
-              <Title
-                style={{
-                  marginTop: 0,
-                  marginBottom: 0,
-                  fontSize: 18,
-                }}>
-                {"ผู้ใช้งานระบบ"}
-              </Title>
-            </Col>
-          </Row>
-          <div className="chemds-container">
-            <Row style={{ marginBottom: "1%" }}>
-              <Col span={16}>
-                <Form layout="inline" form={form}>
-                  <Col>
-                    <Form.Item name="nontriAccount">
-                      <Input placeholder="บัญชีนนทรี" allowClear />
-                    </Form.Item>
-                  </Col>
-                  <Col>
-                    <Form.Item name="name">
-                      <Input placeholder="ชื่อ" allowClear />
-                    </Form.Item>
-                  </Col>
-                  <Col>
-                    <Form.Item name="surname">
-                      <Input placeholder="นามสกุล" allowClear />
-                    </Form.Item>
-                  </Col>
-                  <Col>
-                    <Button
-                      className="chemds-button"
-                      type="primary"
-                      onClick={() => {
-                        onSearch();
-                      }}>
-                      ค้นหา
-                    </Button>
-                  </Col>
-                </Form>
-              </Col>
-              <Col
-                span={8}
-                style={{ display: "flex", justifyContent: "right" }}>
-                <Button
-                  className="chemds-button"
-                  type="primary"
-                  onClick={() => {
-                    setLoading(true);
-                    router.push(`/private/user/new`);
-                  }}>
-                  เพิ่ม
-                </Button>
-              </Col>
-            </Row>
-            <Row style={{ marginBottom: "1%" }}>
-              <Col span={24}>
-                <Table
-                  columns={columns}
-                  rowKey={(record: any) => record.id}
-                  dataSource={users.data}
-                  style={{ width: "100%" }}
-                  pagination={false}
-                  bordered
-                  loading={tableLoading}
-                />
-              </Col>
-            </Row>
-            <Row>
-              <Col span={24}>
-                <Pagination
-                  defaultCurrent={1}
-                  total={users.totalCount}
-                  showSizeChanger={false}
-                  pageSize={10}
-                  onChange={onPageChange}
-                  align="end"
-                />
-              </Col>
-            </Row>
-          </div>
-        </Space>
-      </div>
-    </>
+    <Stack spacing={3}>
+      <Stack direction="row" spacing={3}>
+        <Stack spacing={1} sx={{ flex: '1 1 auto' }}>
+          <Typography variant="h4">ผู้ใช้งานรอพิจารณา</Typography>
+          <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
+            <Button color="inherit" startIcon={<UploadIcon fontSize="var(--icon-fontSize-md)" />}>
+              Import
+            </Button>
+            <Button color="inherit" startIcon={<DownloadIcon fontSize="var(--icon-fontSize-md)" />}>
+              Export
+            </Button>
+          </Stack>
+        </Stack>
+        <div>
+          <Button startIcon={<PlusIcon fontSize="var(--icon-fontSize-md)" />} variant="contained">
+            Add
+          </Button>
+        </div>
+      </Stack>
+      <CustomersFilters />
+      <CustomersTable
+        count={paginatedCustomers.length}
+        page={page}
+        rows={paginatedCustomers}
+        rowsPerPage={rowsPerPage}
+      />
+    </Stack>
   );
 }
+
+function applyPagination(rows: Customer[], page: number, rowsPerPage: number): Customer[] {
+  return rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
+}
+
