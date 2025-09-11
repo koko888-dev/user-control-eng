@@ -1,152 +1,500 @@
-import * as React from 'react';
-import type { Metadata } from 'next';
-import Button from '@mui/material/Button';
-import Stack from '@mui/material/Stack';
-import Typography from '@mui/material/Typography';
-import { DownloadIcon } from '@phosphor-icons/react/dist/ssr/Download';
-import { PlusIcon } from '@phosphor-icons/react/dist/ssr/Plus';
-import { UploadIcon } from '@phosphor-icons/react/dist/ssr/Upload';
-import dayjs from 'dayjs';
+"use client";
+import { useEffect, useMemo, useState } from "react";
+import {
+  Box,
+  Grid,
+  Stack,
+  Button,
+  TextField,
+  Typography,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableRow,
+  TableContainer,
+  Paper,
+  Tooltip,
+  IconButton,
+  TableSortLabel,
+  Pagination,
+  CircularProgress,
+} from "@mui/material";
+import * as Icons from "lucide-react";
+import { convertDateTimeFormate, convertDateTimeToNumber } from "@/app/utils";
 
-import { config } from '@/config';
-import { CustomersFilters } from '@/components/dashboard/customer/customers-filters';
-import { CustomersTable } from '@/components/dashboard/customer/customers-table';
-import type { Customer } from '@/components/dashboard/customer/customers-table';
+// ---- Types ----
+type UserItem = {
+  id: number;
+  uid: string;
+  nontriAccount: string;
+  name: string;
+  surname: string;
+  kuMail: string;
+  updatedAt: string;
+  createdAt: string;
+};
 
-export const metadata = { title: `Customers | Dashboard | ${config.site.name}` } satisfies Metadata;
+type UserList = {
+  data: UserItem[];
+  page: number;
+  totalPage: number;
+  limit: number;
+  totalCount: number;
+};
 
-const customers = [
-  {
-    id: 'USR-010',
-    name: 'Alcides Antonio',
-    avatar: '/assets/avatar-10.png',
-    email: 'alcides.antonio@devias.io',
-    phone: '908-691-3242',
-    address: { city: 'Madrid', country: 'Spain', state: 'Comunidad de Madrid', street: '4158 Hedge Street' },
-    createdAt: dayjs().subtract(2, 'hours').toDate(),
-  },
-  {
-    id: 'USR-009',
-    name: 'Marcus Finn',
-    avatar: '/assets/avatar-9.png',
-    email: 'marcus.finn@devias.io',
-    phone: '415-907-2647',
-    address: { city: 'Carson City', country: 'USA', state: 'Nevada', street: '2188 Armbrester Drive' },
-    createdAt: dayjs().subtract(2, 'hours').toDate(),
-  },
-  {
-    id: 'USR-008',
-    name: 'Jie Yan',
-    avatar: '/assets/avatar-8.png',
-    email: 'jie.yan.song@devias.io',
-    phone: '770-635-2682',
-    address: { city: 'North Canton', country: 'USA', state: 'Ohio', street: '4894 Lakeland Park Drive' },
-    createdAt: dayjs().subtract(2, 'hours').toDate(),
-  },
-  {
-    id: 'USR-007',
-    name: 'Nasimiyu Danai',
-    avatar: '/assets/avatar-7.png',
-    email: 'nasimiyu.danai@devias.io',
-    phone: '801-301-7894',
-    address: { city: 'Salt Lake City', country: 'USA', state: 'Utah', street: '368 Lamberts Branch Road' },
-    createdAt: dayjs().subtract(2, 'hours').toDate(),
-  },
-  {
-    id: 'USR-006',
-    name: 'Iulia Albu',
-    avatar: '/assets/avatar-6.png',
-    email: 'iulia.albu@devias.io',
-    phone: '313-812-8947',
-    address: { city: 'Murray', country: 'USA', state: 'Utah', street: '3934 Wildrose Lane' },
-    createdAt: dayjs().subtract(2, 'hours').toDate(),
-  },
-  {
-    id: 'USR-005',
-    name: 'Fran Perez',
-    avatar: '/assets/avatar-5.png',
-    email: 'fran.perez@devias.io',
-    phone: '712-351-5711',
-    address: { city: 'Atlanta', country: 'USA', state: 'Georgia', street: '1865 Pleasant Hill Road' },
-    createdAt: dayjs().subtract(2, 'hours').toDate(),
-  },
+// ---- Sorting helpers ----
+type Order = "asc" | "desc";
+type OrderBy = keyof Pick<
+  UserItem,
+  "id" | "nontriAccount" | "name" | "surname" | "kuMail" | "updatedAt"
+>;
 
-  {
-    id: 'USR-004',
-    name: 'Penjani Inyene',
-    avatar: '/assets/avatar-4.png',
-    email: 'penjani.inyene@devias.io',
-    phone: '858-602-3409',
-    address: { city: 'Berkeley', country: 'USA', state: 'California', street: '317 Angus Road' },
-    createdAt: dayjs().subtract(2, 'hours').toDate(),
-  },
-  {
-    id: 'USR-003',
-    name: 'Carson Darrin',
-    avatar: '/assets/avatar-3.png',
-    email: 'carson.darrin@devias.io',
-    phone: '304-428-3097',
-    address: { city: 'Cleveland', country: 'USA', state: 'Ohio', street: '2849 Fulton Street' },
-    createdAt: dayjs().subtract(2, 'hours').toDate(),
-  },
-  {
-    id: 'USR-002',
-    name: 'Siegbert Gottfried',
-    avatar: '/assets/avatar-2.png',
-    email: 'siegbert.gottfried@devias.io',
-    phone: '702-661-1654',
-    address: { city: 'Los Angeles', country: 'USA', state: 'California', street: '1798 Hickory Ridge Drive' },
-    createdAt: dayjs().subtract(2, 'hours').toDate(),
-  },
-  {
-    id: 'USR-001',
-    name: 'Miron Vitold',
-    avatar: '/assets/avatar-1.png',
-    email: 'miron.vitold@devias.io',
-    phone: '972-333-4106',
-    address: { city: 'San Diego', country: 'USA', state: 'California', street: '75247' },
-    createdAt: dayjs().subtract(2, 'hours').toDate(),
-  },
-] satisfies Customer[];
+function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
+  // custom for date-time string
+  if (orderBy === "updatedAt") {
+    const av = convertDateTimeToNumber((a as any)[orderBy]);
+    const bv = convertDateTimeToNumber((b as any)[orderBy]);
+    if (bv < av) return -1;
+    if (bv > av) return 1;
+    return 0;
+  }
+  const av = (a as any)[orderBy];
+  const bv = (b as any)[orderBy];
 
-export default function UsersPendingPage(): React.JSX.Element {
-  const page = 0;
-  const rowsPerPage = 5;
+  if (typeof av === "number" && typeof bv === "number") {
+    if (bv < av) return -1;
+    if (bv > av) return 1;
+    return 0;
+  }
+  // string length sort was the original behavior for some columns;
+  // this version sorts lexicographically (usually preferable).
+  // If you want length-based sort, swap to av.length / bv.length.
+  const aStr = String(av);
+  const bStr = String(bv);
+  if (bStr < aStr) return -1;
+  if (bStr > aStr) return 1;
+  return 0;
+}
 
-  const paginatedCustomers = applyPagination(customers, page, rowsPerPage);
+function getComparator<Key extends keyof any>(
+  order: Order,
+  orderBy: Key
+): (a: { [key in Key]: any }, b: { [key in Key]: any }) => number {
+  return order === "desc"
+    ? (a, b) => descendingComparator(a, b, orderBy)
+    : (a, b) => -descendingComparator(a, b, orderBy);
+}
+
+function stableSort<T>(
+  array: readonly T[],
+  comparator: (a: T, b: T) => number
+) {
+  const stabilized = array.map((el, index) => [el, index] as const);
+  stabilized.sort((a, b) => {
+    const cmp = comparator(a[0], b[0]);
+    if (cmp !== 0) return cmp;
+    return a[1] - b[1];
+  });
+  return stabilized.map((el) => el[0]);
+}
+
+export default function PendingApprovalUserIndexPage() {
+  // ---- UI states ----
+  const [loading, setLoading] = useState(true);
+  const [tableLoading, setTableLoading] = useState(true);
+
+  // pagination
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const rowsPerPage = 10;
+
+  // sorting
+  const [order, setOrder] = useState<Order>("asc");
+  const [orderBy, setOrderBy] = useState<OrderBy>("id");
+
+  // data
+  const [users, setUsers] = useState<UserList>({
+    data: [],
+    page: 1,
+    totalPage: 1,
+    limit: rowsPerPage,
+    totalCount: 0,
+  });
+
+  // search
+  const [filters, setFilters] = useState({
+    nontriAccount: "",
+    name: "",
+    surname: "",
+  });
+  const [committedFilters, setCommittedFilters] = useState(filters);
+
+  const handleRequestSort = (property: OrderBy) => {
+    const isAsc = orderBy === property && order === "asc";
+    setOrder(isAsc ? "desc" : "asc");
+    setOrderBy(property);
+  };
+
+  const fetchpendingApprovalUsers = async () => {
+    try {
+      // mock data (เหมือนต้นฉบับ)
+      const data: UserList = {
+        data: [
+          {
+            id: 1,
+            uid: "xxx",
+            nontriAccount: "nattapong01",
+            name: "ณัฐพงศ์",
+            surname: "ศรีสุข",
+            kuMail: "nattapong01@example.com",
+            updatedAt: "2025-07-03T10:15:23Z",
+            createdAt: "2025-07-03T10:15:23Z",
+          },
+          {
+            id: 2,
+            uid: "xxx",
+            nontriAccount: "arisa_kt",
+            name: "อริสา",
+            surname: "เกตุแก้ว",
+            kuMail: "arisa.kt@example.com",
+            updatedAt: "2025-07-03T10:17:45Z",
+            createdAt: "2025-07-03T10:15:23Z",
+          },
+          {
+            id: 3,
+            uid: "xxx",
+            nontriAccount: "beam_rk",
+            name: "พีรภัทร",
+            surname: "รักดี",
+            kuMail: "beam.rk@example.com",
+            updatedAt: "2025-07-03T10:18:12Z",
+            createdAt: "2025-07-03T10:15:23Z",
+          },
+          {
+            id: 4,
+            uid: "xxx",
+            nontriAccount: "fonny_89",
+            name: "น้ำฝน",
+            surname: "ธรรมรักษ์",
+            kuMail: "fonny89@example.com",
+            updatedAt: "2025-07-03T10:20:08Z",
+            createdAt: "2025-07-03T10:15:23Z",
+          },
+          {
+            id: 5,
+            uid: "xxx",
+            nontriAccount: "meechai_dev",
+            name: "มีชัย",
+            surname: "สารวัตร",
+            kuMail: "meechai.dev@example.com",
+            updatedAt: "2025-07-03T10:21:50Z",
+            createdAt: "2025-07-03T10:15:23Z",
+          },
+          {
+            id: 6,
+            uid: "xxx",
+            nontriAccount: "piyada_sky",
+            name: "ปิยะดา",
+            surname: "เมฆขลา",
+            kuMail: "piyada.sky@example.com",
+            updatedAt: "2025-07-03T10:22:33Z",
+            createdAt: "2025-07-03T10:15:23Z",
+          },
+          {
+            id: 7,
+            uid: "xxx",
+            nontriAccount: "tonkla_ch",
+            name: "ต้นกล้า",
+            surname: "ชัยวัฒน์",
+            kuMail: "tonkla.ch@example.com",
+            updatedAt: "2025-07-03T10:24:01Z",
+            createdAt: "2025-07-03T10:15:23Z",
+          },
+          {
+            id: 8,
+            uid: "xxx",
+            nontriAccount: "noon_lovely",
+            name: "นุ่น",
+            surname: "รัตนโกสินทร์",
+            kuMail: "noon.lovely@example.com",
+            updatedAt: "2025-07-03T10:25:14Z",
+            createdAt: "2025-07-03T10:15:23Z",
+          },
+          {
+            id: 9,
+            uid: "xxx",
+            nontriAccount: "krit_sr",
+            name: "กฤต",
+            surname: "ศิริเวช",
+            kuMail: "krit.sr@example.com",
+            updatedAt: "2025-07-03T10:27:09Z",
+            createdAt: "2025-07-03T10:15:23Z",
+          },
+          {
+            id: 10,
+            uid: "xxx",
+            nontriAccount: "junezaza",
+            name: "จูน",
+            surname: "อินทรโชติ",
+            kuMail: "junezaza@example.com",
+            updatedAt: "2025-07-03T10:28:56Z",
+            createdAt: "2025-07-03T10:15:23Z",
+          },
+        ],
+        page: 1,
+        totalPage: 1,
+        limit: rowsPerPage,
+        totalCount: 10,
+      };
+
+      setUsers(data);
+    } catch (error) {
+      console.error("error: ", error);
+    } finally {
+      setLoading(false);
+      setTableLoading(false);
+    }
+  };
+
+  // simulate fetching when page or filters change
+  useEffect(() => {
+    setTableLoading(true);
+    fetchpendingApprovalUsers();
+  }, [currentPage, committedFilters]);
+
+  // filtering client-side (เหมือน onSearch แล้วค่อย fetch)
+  const filtered = useMemo(() => {
+    const na = committedFilters.nontriAccount.trim().toLowerCase();
+    const nm = committedFilters.name.trim().toLowerCase();
+    const sn = committedFilters.surname.trim().toLowerCase();
+
+    return users.data.filter((u) => {
+      const okNA = !na || u.nontriAccount.toLowerCase().includes(na);
+      const okN = !nm || u.name.toLowerCase().includes(nm);
+      const okS = !sn || u.surname.toLowerCase().includes(sn);
+      return okNA && okN && okS;
+    });
+  }, [users.data, committedFilters]);
+
+  const sorted = useMemo(
+    () => stableSort(filtered, getComparator(order, orderBy)),
+    [filtered, order, orderBy]
+  );
+
+  const paginated = useMemo(() => {
+    const start = (currentPage - 1) * rowsPerPage;
+    return sorted.slice(start, start + rowsPerPage);
+  }, [sorted, currentPage]);
+
+  const handleSearch = () => {
+    setCommittedFilters(filters);
+    setCurrentPage(1);
+  };
 
   return (
-    <Stack spacing={3}>
-      <Stack direction="row" spacing={3}>
-        <Stack spacing={1} sx={{ flex: '1 1 auto' }}>
-          <Typography variant="h4">ผู้ใช้งานรอพิจารณา</Typography>
-          <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
-            <Button color="inherit" startIcon={<UploadIcon fontSize="var(--icon-fontSize-md)" />}>
-              Import
-            </Button>
-            <Button color="inherit" startIcon={<DownloadIcon fontSize="var(--icon-fontSize-md)" />}>
-              Export
-            </Button>
-          </Stack>
-        </Stack>
-        <div>
-          <Button startIcon={<PlusIcon fontSize="var(--icon-fontSize-md)" />} variant="contained">
-            Add
-          </Button>
-        </div>
+    <Box sx={{ p: 2 }}>
+      <Stack spacing={2} width="100%">
+        <Grid container alignItems="center">
+          <Grid size={{ xs: 12,md :6}}>
+            <Typography
+              variant="h6"
+              sx={{ mt: 0, mb: 0, fontSize: 18, fontWeight: 600 }}
+            >
+              ผู้ใช้งานรอพิจารณา
+            </Typography>
+          </Grid>
+        </Grid>
+
+        {/* Search Bar */}
+        <Grid container spacing={1} alignItems="center">
+          <Grid size={{ xs: 12,md :6}}>
+            <Stack direction={{ xs: "column", sm: "row" }} spacing={1}>
+              <TextField
+                label="บัญชีนนทรี"
+                size="small"
+                fullWidth
+                value={filters.nontriAccount}
+                onChange={(e) =>
+                  setFilters((s) => ({ ...s, nontriAccount: e.target.value }))
+                }
+              />
+              <TextField
+                label="ชื่อ"
+                size="small"
+                fullWidth
+                value={filters.name}
+                onChange={(e) =>
+                  setFilters((s) => ({ ...s, name: e.target.value }))
+                }
+              />
+              <TextField
+                label="นามสกุล"
+                size="small"
+                fullWidth
+                value={filters.surname}
+                onChange={(e) =>
+                  setFilters((s) => ({ ...s, surname: e.target.value }))
+                }
+              />
+              <Button
+                variant="contained"
+                onClick={handleSearch}
+                sx={{ whiteSpace: "nowrap" }}
+              >
+                ค้นหา
+              </Button>
+            </Stack>
+          </Grid>
+        </Grid>
+
+        {/* Table */}
+        <TableContainer component={Paper} sx={{ position: "relative" }}>
+          {tableLoading && (
+            <Box
+              sx={{
+                position: "absolute",
+                inset: 0,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                bgcolor: "rgba(255,255,255,0.6)",
+                zIndex: 1,
+              }}
+            >
+              <CircularProgress />
+            </Box>
+          )}
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableCell align="center" sortDirection={orderBy === "id" ? order : false}>
+                  <TableSortLabel
+                    active={orderBy === "id"}
+                    direction={orderBy === "id" ? order : "asc"}
+                    onClick={() => handleRequestSort("id")}
+                  >
+                    ไอดีผู้ใช้งาน
+                  </TableSortLabel>
+                </TableCell>
+
+                <TableCell>
+                  <TableSortLabel
+                    active={orderBy === "nontriAccount"}
+                    direction={orderBy === "nontriAccount" ? order : "asc"}
+                    onClick={() => handleRequestSort("nontriAccount")}
+                  >
+                    บัญชีนนทรี
+                  </TableSortLabel>
+                </TableCell>
+
+                <TableCell>
+                  <TableSortLabel
+                    active={orderBy === "name"}
+                    direction={orderBy === "name" ? order : "asc"}
+                    onClick={() => handleRequestSort("name")}
+                  >
+                    ชื่อ
+                  </TableSortLabel>
+                </TableCell>
+
+                <TableCell>
+                  <TableSortLabel
+                    active={orderBy === "surname"}
+                    direction={orderBy === "surname" ? order : "asc"}
+                    onClick={() => handleRequestSort("surname")}
+                  >
+                    นามสกุล
+                  </TableSortLabel>
+                </TableCell>
+
+                <TableCell>
+                  <TableSortLabel
+                    active={orderBy === "kuMail"}
+                    direction={orderBy === "kuMail" ? order : "asc"}
+                    onClick={() => handleRequestSort("kuMail")}
+                  >
+                    ku mail
+                  </TableSortLabel>
+                </TableCell>
+
+                <TableCell align="center" sortDirection={orderBy === "updatedAt" ? order : false}>
+                  <TableSortLabel
+                    active={orderBy === "updatedAt"}
+                    direction={orderBy === "updatedAt" ? order : "asc"}
+                    onClick={() => handleRequestSort("updatedAt")}
+                  >
+                    ยื่นขอเมื่อ
+                  </TableSortLabel>
+                </TableCell>
+
+                <TableCell align="center" sx={{ width: { xs: 120, md: "10%" } }}>
+                  {/* empty title column for actions */}
+                </TableCell>
+              </TableRow>
+            </TableHead>
+
+            <TableBody>
+              {paginated.map((row) => (
+                <TableRow key={row.id} hover>
+                  <TableCell align="center">{row.id}</TableCell>
+                  <TableCell>{row.nontriAccount}</TableCell>
+                  <TableCell>{row.name}</TableCell>
+                  <TableCell>{row.surname}</TableCell>
+                  <TableCell>{row.kuMail}</TableCell>
+                  <TableCell align="center">
+                    {convertDateTimeFormate(row.updatedAt)}
+                  </TableCell>
+                  <TableCell align="center">
+                    <Stack
+                      direction="row"
+                      spacing={1}
+                      alignItems="center"
+                      justifyContent="center"
+                    >
+                      <Tooltip title="ยอมรับ">
+                        <IconButton size="small" color="success">
+                          <Icons.Check size={18} />
+                        </IconButton>
+                      </Tooltip>
+                      <Tooltip title="ปฏิเสธ">
+                        <IconButton size="small" color="error">
+                          <Icons.X size={18} />
+                        </IconButton>
+                      </Tooltip>
+                    </Stack>
+                  </TableCell>
+                </TableRow>
+              ))}
+
+              {paginated.length === 0 && !tableLoading && (
+                <TableRow>
+                  <TableCell colSpan={7} align="center" sx={{ py: 6 }}>
+                    ไม่พบข้อมูล
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </TableContainer>
+
+        {/* Pagination */}
+        <Grid container>
+          <Grid size={{ xs: 12}} display="flex" justifyContent="flex-end">
+            <Pagination
+              page={currentPage}
+              onChange={(_, p) => setCurrentPage(p)}
+              count={Math.max(1, Math.ceil(filtered.length / rowsPerPage))}
+              showFirstButton
+              showLastButton
+            />
+          </Grid>
+        </Grid>
       </Stack>
-      <CustomersFilters />
-      <CustomersTable
-        count={paginatedCustomers.length}
-        page={page}
-        rows={paginatedCustomers}
-        rowsPerPage={rowsPerPage}
-      />
-    </Stack>
+    </Box>
   );
 }
 
-function applyPagination(rows: Customer[], page: number, rowsPerPage: number): Customer[] {
-  return rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
-}
+
+
+
 
