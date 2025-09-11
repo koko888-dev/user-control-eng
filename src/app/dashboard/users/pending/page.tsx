@@ -23,12 +23,6 @@ import {
 import * as Icons from "lucide-react";
 import { convertDateTimeFormate, convertDateTimeToNumber } from "@/app/utils";
 
-<<<<<<< HEAD
-export default function pendingApprovalUserIndexPage() {
-  const { Title } = Typography;
-  const [form] = Form.useForm();
-  const router = useRouter();
-=======
 // ---- Types ----
 type UserItem = {
   id: number;
@@ -107,7 +101,6 @@ function stableSort<T>(
 
 export default function PendingApprovalUserIndexPage() {
   // ---- UI states ----
->>>>>>> origin/dev
   const [loading, setLoading] = useState(true);
   const [tableLoading, setTableLoading] = useState(true);
 
@@ -136,105 +129,11 @@ export default function PendingApprovalUserIndexPage() {
   });
   const [committedFilters, setCommittedFilters] = useState(filters);
 
-<<<<<<< HEAD
-  const columns: TableProps["columns"] = [
-    {
-      title: "ไอดีผู้ใช้งาน",
-      dataIndex: "id",
-      key: "id",
-      align: "center",
-      sorter: (a, b) => a.id - b.id,
-    },
-    {
-      title: "บัญชีนนทรี",
-      onHeaderCell: () => {
-        return { style: { textAlign: "center" } }; // Center-align the header
-      },
-      align: "left",
-      dataIndex: "nontriAccount",
-      key: "nontriAccount",
-      sorter: (a, b) => a.nontriAccount.length - b.nontriAccount.length,
-    },
-    {
-      title: "ชื่อ",
-      onHeaderCell: () => {
-        return { style: { textAlign: "center" } }; // Center-align the header
-      },
-      align: "left",
-      dataIndex: "name",
-      key: "name",
-      sorter: (a, b) => a.name.length - b.name.length,
-    },
-    {
-      title: "นามสกุล",
-      onHeaderCell: () => {
-        return { style: { textAlign: "center" } }; // Center-align the header
-      },
-      align: "left",
-      dataIndex: "surname",
-      key: "surname",
-      sorter: (a, b) => a.surname.length - b.surname.length,
-    },
-    {
-      title: "ku mail",
-      onHeaderCell: () => {
-        return { style: { textAlign: "center" } }; // Center-align the header
-      },
-      align: "left",
-      dataIndex: "kuMail",
-      key: "kuMail",
-      sorter: (a, b) => a.kuMail.length - b.kuMail.length,
-    },
-    {
-      title: "ยื่นขอเมื่อ",
-      align: "center",
-      dataIndex: "updatedAt",
-      key: "updatedAt",
-      sorter: (a, b) =>
-        convertDateTimeToNumber(a.updatedAt) -
-        convertDateTimeToNumber(b.updatedAt),
-      render: (_, record) => {
-        return convertDateTimeFormate(record.updatedAt);
-      },
-    },
-    {
-      title: "",
-      key: "id",
-      dataIndex: "id",
-      align: "center",
-      width: "10%",
-      render: (_, record) => {
-        return (
-          <Row
-            gutter={[16, 16]}
-            style={{
-              textAlign: "center",
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-            }}>
-            <Col span={8}>
-              <Tooltip title="ยอมรับ">
-                <Icons.Check size={16} />
-              </Tooltip>
-            </Col>
-            <Col span={8}>
-              <Tooltip title="ปฏิเสธ">
-                <Icons.X size={16} />
-              </Tooltip>
-            </Col>
-          </Row>
-        );
-      },
-    },
-  ];
-=======
   const handleRequestSort = (property: OrderBy) => {
     const isAsc = orderBy === property && order === "asc";
     setOrder(isAsc ? "desc" : "asc");
     setOrderBy(property);
   };
->>>>>>> origin/dev
 
   const fetchpendingApprovalUsers = async () => {
     try {
@@ -392,90 +291,6 @@ export default function PendingApprovalUserIndexPage() {
     setCurrentPage(1);
   };
 
-<<<<<<< HEAD
-  useEffect(() => {
-    setTableLoading(true);
-    fetchpendingApprovalUsers();
-  }, [currentPage, currentSearch]);
-
-  return (
-    <>
-      <div style={{ padding: 10 }}>
-        <Space direction="vertical" style={{ width: "100%" }} size={10}>
-          <Row>
-            <Col span={12}>
-              <Title
-                style={{
-                  marginTop: 0,
-                  marginBottom: 0,
-                  fontSize: 18,
-                }}>
-                {"ผู้ใช้งานรอพิจารณา"}
-              </Title>
-            </Col>
-          </Row>
-          <div className="chemds-container">
-            <Row style={{ marginBottom: "1%" }}>
-              <Col span={16}>
-                <Form layout="inline" form={form}>
-                  <Col>
-                    <Form.Item name="nontriAccount">
-                      <Input placeholder="บัญชีนนทรี" allowClear />
-                    </Form.Item>
-                  </Col>
-                  <Col>
-                    <Form.Item name="name">
-                      <Input placeholder="ชื่อ" allowClear />
-                    </Form.Item>
-                  </Col>
-                  <Col>
-                    <Form.Item name="surname">
-                      <Input placeholder="นามสกุล" allowClear />
-                    </Form.Item>
-                  </Col>
-                  <Col>
-                    <Button
-                      className="chemds-button"
-                      type="primary"
-                      onClick={() => {
-                        onSearch();
-                      }}>
-                      ค้นหา
-                    </Button>
-                  </Col>
-                </Form>
-              </Col>
-            </Row>
-            <Row style={{ marginBottom: "1%" }}>
-              <Col span={24}>
-                <Table
-                  columns={columns}
-                  rowKey={(record: any) => record.id}
-                  dataSource={users.data}
-                  style={{ width: "100%" }}
-                  pagination={false}
-                  bordered
-                  loading={tableLoading}
-                />
-              </Col>
-            </Row>
-            <Row>
-              <Col span={24}>
-                <Pagination
-                  defaultCurrent={1}
-                  total={users.totalCount}
-                  showSizeChanger={false}
-                  pageSize={10}
-                  onChange={onPageChange}
-                  align="end"
-                />
-              </Col>
-            </Row>
-          </div>
-        </Space>
-      </div>
-    </>
-=======
   return (
     <Box sx={{ p: 2 }}>
       <Stack spacing={2} width="100%">
@@ -676,11 +491,5 @@ export default function PendingApprovalUserIndexPage() {
         </Grid>
       </Stack>
     </Box>
->>>>>>> origin/dev
   );
 }
-
-
-
-
-
