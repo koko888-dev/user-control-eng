@@ -240,7 +240,8 @@ export default function SystemIndexPage() {
                   variant="contained"
                   onClick={() => {
                     setLoading(true);
-                    push("/dashboard/integrations/add_system");
+                    //push("/dashboard/integrations/add_system");
+                    push("/dashboard/integrations/new");
                   }}
                 >
                   เพิ่ม
@@ -338,7 +339,7 @@ export default function SystemIndexPage() {
                                   size="small"
                                   onClick={() => {
                                     setLoading(true);
-                                    push(`/private/system/${record.id}/detail`);
+                                    push(`/dashboard/integrations/${record.id}/details`);
                                   }}
                                 >
                                   <Icons.BookOpenText size={16} />
@@ -351,7 +352,7 @@ export default function SystemIndexPage() {
                                   size="small"
                                   onClick={() => {
                                     setLoading(true);
-                                    push(`/private/system/${record.id}/role`);
+                                    push(`/dashboard/integrations/${record.id}/roles`);
                                   }}
                                 >
                                   <Icons.ShieldPlus size={16} />

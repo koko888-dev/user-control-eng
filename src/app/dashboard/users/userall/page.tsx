@@ -1,4 +1,3 @@
-
 "use client";
 import { useEffect, useMemo, useState } from "react";
 import {
@@ -25,6 +24,13 @@ import * as Icons from "lucide-react";
 import { useRouter } from "next/navigation";
 import { convertDateTimeFormate, convertDateTimeToNumber } from "@/app/utils";
 
+// [เพิ่ม] dayjs + relativeTime (ภาษาไทย)
+import dayjs from "dayjs";
+import relativeTime from "dayjs/plugin/relativeTime";
+import "dayjs/locale/th";
+dayjs.extend(relativeTime);
+dayjs.locale("th");
+
 // ---- Types ----
 type UserItem = {
   id: number;
@@ -35,7 +41,11 @@ type UserItem = {
   kuMail: string;
   updatedAt: string;
   createdAt: string;
+
+  // [เพิ่ม] ออนไลน์ล่าสุด
+  lastOnline: string | null;
 };
+
 type UserList = {
   data: UserItem[];
   page: number;
@@ -46,12 +56,14 @@ type UserList = {
 
 // ---- Sorting helpers ----
 type Order = "asc" | "desc";
-type OrderBy = keyof Pick<UserItem, "id" | "nontriAccount" | "name" | "surname" | "updatedAt">;
+// [แก้] รองรับ 'lastOnline'
+type OrderBy = keyof Pick<UserItem, "id" | "nontriAccount" | "name" | "surname" | "updatedAt" | "lastOnline">;
 
 function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
-  if (orderBy === "updatedAt") {
-    const av = convertDateTimeToNumber((a as any)[orderBy]);
-    const bv = convertDateTimeToNumber((b as any)[orderBy]);
+  // [แก้] ให้ updatedAt และ lastOnline เทียบเป็นตัวเลขเวลา
+  if (orderBy === "updatedAt" || orderBy === "lastOnline") {
+    const av = (a as any)[orderBy] ? convertDateTimeToNumber((a as any)[orderBy]) : 0;
+    const bv = (b as any)[orderBy] ? convertDateTimeToNumber((b as any)[orderBy]) : 0;
     if (bv < av) return -1;
     if (bv > av) return 1;
     return 0;
@@ -82,6 +94,17 @@ function stableSort<T>(array: readonly T[], comparator: (a: T, b: T) => number) 
     return a[1] - b[1];
   });
   return stabilized.map((el) => el[0]);
+}
+
+// [เพิ่ม] เกณฑ์สีจุดสถานะตามเวลาล่าสุดออนไลน์
+const ONLINE_NOW_MIN = 2;     // <= 2 นาที: เขียว
+const ONLINE_RECENT_MIN = 30; // <= 30 นาที: เหลือง
+function onlineColor(lastOnline: string | null) {
+  if (!lastOnline) return "grey.400";
+  const mins = dayjs().diff(dayjs(lastOnline), "minute");
+  if (mins <= ONLINE_NOW_MIN) return "success.main";
+  if (mins <= ONLINE_RECENT_MIN) return "warning.main";
+  return "grey.500";
 }
 
 export default function UserIndexPage() {
@@ -118,16 +141,17 @@ export default function UserIndexPage() {
     try {
       const data: UserList = {
         data: [
-          { id: 1, uid: "xxx", nontriAccount: "nattapong01", name: "ณัฐพงศ์", surname: "ศรีสุข", kuMail: "nattapong01@example.com", updatedAt: "2025-07-03T10:15:23Z", createdAt: "2025-07-03T10:15:23Z" },
-          { id: 2, uid: "xxx", nontriAccount: "arisa_kt", name: "อริสา", surname: "เกตุแก้ว", kuMail: "arisa.kt@example.com", updatedAt: "2025-07-03T10:17:45Z", createdAt: "2025-07-03T10:15:23Z" },
-          { id: 3, uid: "xxx", nontriAccount: "beam_rk", name: "พีรภัทร", surname: "รักดี", kuMail: "beam.rk@example.com", updatedAt: "2025-07-03T10:18:12Z", createdAt: "2025-07-03T10:15:23Z" },
-          { id: 4, uid: "xxx", nontriAccount: "fonny_89", name: "น้ำฝน", surname: "ธรรมรักษ์", kuMail: "fonny89@example.com", updatedAt: "2025-07-03T10:20:08Z", createdAt: "2025-07-03T10:15:23Z" },
-          { id: 5, uid: "xxx", nontriAccount: "meechai_dev", name: "มีชัย", surname: "สารวัตร", kuMail: "meechai.dev@example.com", updatedAt: "2025-07-03T10:21:50Z", createdAt: "2025-07-03T10:15:23Z" },
-          { id: 6, uid: "xxx", nontriAccount: "piyada_sky", name: "ปิยะดา", surname: "เมฆขลา", kuMail: "piyada.sky@example.com", updatedAt: "2025-07-03T10:22:33Z", createdAt: "2025-07-03T10:15:23Z" },
-          { id: 7, uid: "xxx", nontriAccount: "tonkla_ch", name: "ต้นกล้า", surname: "ชัยวัฒน์", kuMail: "tonkla.ch@example.com", updatedAt: "2025-07-03T10:24:01Z", createdAt: "2025-07-03T10:15:23Z" },
-          { id: 8, uid: "xxx", nontriAccount: "noon_lovely", name: "นุ่น", surname: "รัตนโกสินทร์", kuMail: "noon.lovely@example.com", updatedAt: "2025-07-03T10:25:14Z", createdAt: "2025-07-03T10:15:23Z" },
-          { id: 9, uid: "xxx", nontriAccount: "krit_sr", name: "กฤต", surname: "ศิริเวช", kuMail: "krit.sr@example.com", updatedAt: "2025-07-03T10:27:09Z", createdAt: "2025-07-03T10:15:23Z" },
-          { id: 10, uid: "xxx", nontriAccount: "junezaza", name: "จูน", surname: "อินทรโชติ", kuMail: "junezaza@example.com", updatedAt: "2025-07-03T10:28:56Z", createdAt: "2025-07-03T10:15:23Z" },
+          // [แก้] ใส่ lastOnline (ตัวอย่าง mock)
+          { id: 1, uid: "xxx", nontriAccount: "nattapong01", name: "ณัฐพงศ์", surname: "ศรีสุข", kuMail: "nattapong01@example.com", updatedAt: "2025-07-03T10:15:23Z", createdAt: "2025-07-03T10:15:23Z", lastOnline: "2025-09-11T12:05:00Z" },
+          { id: 2, uid: "xxx", nontriAccount: "arisa_kt",    name: "อริสา",  surname: "เกตุแก้ว", kuMail: "arisa.kt@example.com",      updatedAt: "2025-07-03T10:17:45Z", createdAt: "2025-07-03T10:15:23Z", lastOnline: "2025-09-11T11:30:00Z" },
+          { id: 3, uid: "xxx", nontriAccount: "beam_rk",     name: "พีรภัทร", surname: "รักดี",   kuMail: "beam.rk@example.com",       updatedAt: "2025-07-03T10:18:12Z", createdAt: "2025-07-03T10:15:23Z", lastOnline: null },
+          { id: 4, uid: "xxx", nontriAccount: "fonny_89",    name: "น้ำฝน",  surname: "ธรรมรักษ์", kuMail: "fonny89@example.com",       updatedAt: "2025-07-03T10:20:08Z", createdAt: "2025-07-03T10:15:23Z", lastOnline: "2025-09-11T10:10:00Z" },
+          { id: 5, uid: "xxx", nontriAccount: "meechai_dev", name: "มีชัย",   surname: "สารวัตร",  kuMail: "meechai.dev@example.com",   updatedAt: "2025-07-03T10:21:50Z", createdAt: "2025-07-03T10:15:23Z", lastOnline: "2025-09-11T12:07:00Z" },
+          { id: 6, uid: "xxx", nontriAccount: "piyada_sky",  name: "ปิยะดา", surname: "เมฆขลา",    kuMail: "piyada.sky@example.com",    updatedAt: "2025-07-03T10:22:33Z", createdAt: "2025-07-03T10:15:23Z", lastOnline: "2025-09-11T11:59:00Z" },
+          { id: 7, uid: "xxx", nontriAccount: "tonkla_ch",   name: "ต้นกล้า", surname: "ชัยวัฒน์", kuMail: "tonkla.ch@example.com",     updatedAt: "2025-07-03T10:24:01Z", createdAt: "2025-07-03T10:15:23Z", lastOnline: "2025-09-11T11:00:00Z" },
+          { id: 8, uid: "xxx", nontriAccount: "noon_lovely", name: "นุ่น",    surname: "รัตนโกสินทร์", kuMail: "noon.lovely@example.com", updatedAt: "2025-07-03T10:25:14Z", createdAt: "2025-07-03T10:15:23Z", lastOnline: "2025-09-11T07:00:00Z" },
+          { id: 9, uid: "xxx", nontriAccount: "krit_sr",     name: "กฤต",    surname: "ศิริเวช",   kuMail: "krit.sr@example.com",       updatedAt: "2025-07-03T10:27:09Z", createdAt: "2025-07-03T10:15:23Z", lastOnline: "2025-09-11T13:00:00Z" },
+          { id: 10, uid: "xxx", nontriAccount: "junezaza",   name: "จูน",    surname: "อินทรโชติ",  kuMail: "junezaza@example.com",     updatedAt: "2025-07-03T10:28:56Z", createdAt: "2025-07-03T10:15:23Z", lastOnline: "2025-09-11T17:45:00Z" },
         ],
         page: 1,
         totalPage: 1,
@@ -177,7 +201,7 @@ export default function UserIndexPage() {
     <Box sx={{ p: 2 }}>
       <Stack spacing={2} width="100%">
         <Grid container alignItems="center">
-          <Grid size={{ xs: 12,md :6}}>
+          <Grid size={{ xs: 12, md: 6 }}>
             <Typography variant="h6" sx={{ m: 0, fontSize: 18, fontWeight: 600 }}>
               ผู้ใช้งานระบบ
             </Typography>
@@ -186,7 +210,7 @@ export default function UserIndexPage() {
 
         {/* Search + Add */}
         <Grid container spacing={1} alignItems="center">
-          <Grid size={{ xs: 12,md :8}}>
+          <Grid size={{ xs: 12, md: 8 }}>
             <Stack direction={{ xs: "column", sm: "row" }} spacing={1}>
               <TextField
                 label="บัญชีนนทรี"
@@ -215,12 +239,12 @@ export default function UserIndexPage() {
             </Stack>
           </Grid>
 
-          <Grid size={{ xs: 12,md :4}} display="flex" justifyContent={{ xs: "flex-start", md: "flex-end" }}>
+          <Grid size={{ xs: 12, md: 4 }} display="flex" justifyContent={{ xs: "flex-start", md: "flex-end" }}>
             <Button
               variant="contained"
               onClick={() => {
                 setLoading(true);
-                router.push(`/private/user/new`);
+                router.push(`/dashboard/users/userall/new`);
               }}
             >
               เพิ่ม
@@ -289,6 +313,21 @@ export default function UserIndexPage() {
                   </TableSortLabel>
                 </TableCell>
 
+                {/* [เพิ่ม] คอลัมน์ “ออนไลน์ล่าสุด” */}
+                <TableCell
+                  align="center"
+                  sortDirection={orderBy === "lastOnline" ? order : false}
+                  sx={{ width: { xs: 140, md: "12%" }, whiteSpace: "nowrap" }}
+                >
+                  <TableSortLabel
+                    active={orderBy === "lastOnline"}
+                    direction={orderBy === "lastOnline" ? order : "asc"}
+                    onClick={() => handleRequestSort("lastOnline")}
+                  >
+                    ออนไลน์ล่าสุด
+                  </TableSortLabel>
+                </TableCell>
+
                 <TableCell align="center" sortDirection={orderBy === "updatedAt" ? order : false}>
                   <TableSortLabel
                     active={orderBy === "updatedAt"}
@@ -312,14 +351,32 @@ export default function UserIndexPage() {
                   <TableCell>{row.nontriAccount}</TableCell>
                   <TableCell>{row.name}</TableCell>
                   <TableCell>{row.surname}</TableCell>
+
+                  {/* [เพิ่ม] ค่าออนไลน์ล่าสุด: จุดสี + “xx นาทีที่แล้ว” + tooltip เวลา exact */}
+                  <TableCell align="center" sx={{ whiteSpace: "nowrap" }}>
+                    {row.lastOnline ? (
+                      <Tooltip title={convertDateTimeFormate(row.lastOnline)}>
+                        <Stack direction="row" spacing={1} alignItems="center" justifyContent="center">
+                          <Box sx={{ width: 8, height: 8, borderRadius: "50%", bgcolor: onlineColor(row.lastOnline) }} />
+                          <Typography variant="body2" sx={{ display: { xs: "none", sm: "inline" } }}>
+                            {dayjs(row.lastOnline).fromNow()}
+                          </Typography>
+                        </Stack>
+                      </Tooltip>
+                    ) : (
+                      "-"
+                    )}
+                  </TableCell>
+
                   <TableCell align="center">{convertDateTimeFormate(row.updatedAt)}</TableCell>
+
                   <TableCell align="center">
                     <Tooltip title="รายละเอียด">
                       <IconButton
                         size="small"
                         onClick={() => {
                           setLoading(true);
-                          router.push(`/private/user/${row.uid}`);
+                          router.push(`/dashboard/users/userall/${row.uid}`);
                         }}
                       >
                         <Icons.BookOpenText size={18} />
@@ -331,7 +388,8 @@ export default function UserIndexPage() {
 
               {paginated.length === 0 && !tableLoading && (
                 <TableRow>
-                  <TableCell colSpan={6} align="center" sx={{ py: 6 }}>
+                  {/* [แก้] colSpan จาก 6 -> 7 เพราะเพิ่มคอลัมน์ใหม่ */}
+                  <TableCell colSpan={7} align="center" sx={{ py: 6 }}>
                     ไม่พบข้อมูล
                   </TableCell>
                 </TableRow>
@@ -342,7 +400,7 @@ export default function UserIndexPage() {
 
         {/* Pagination */}
         <Grid container>
-          <Grid size={{ xs: 12}} display="flex" justifyContent="flex-end">
+          <Grid size={{ xs: 12 }} display="flex" justifyContent="flex-end">
             <Pagination
               page={currentPage}
               onChange={(_, p) => setCurrentPage(p)}
@@ -356,3 +414,4 @@ export default function UserIndexPage() {
     </Box>
   );
 }
+

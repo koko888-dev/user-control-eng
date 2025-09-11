@@ -1,0 +1,250 @@
+"use client";
+import { useEffect, useState } from "react";
+import {
+  Box,
+  Grid,
+  Stack,
+  Typography,
+  TextField,
+  Button,
+  Paper,
+  Breadcrumbs,
+  Link,
+  Skeleton,
+  Snackbar,
+  Alert,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogContentText,
+  DialogActions,
+} from "@mui/material";
+import { useRouter } from "next/navigation";
+import { ThemButtonColor } from "@/app/utils/constants";
+
+type FormState = {
+  webKey: string;
+  name: string;
+  description: string;
+};
+
+export default function SystemDetailPage() {
+  const router = useRouter();
+
+  const [loading, setLoading] = useState(true);
+
+  // form state
+  const [form, setForm] = useState<FormState>({
+    webKey: "",
+    name: "",
+    description: "",
+  });
+  const [errors, setErrors] = useState<Partial<FormState>>({});
+
+  // snack
+  const [snack, setSnack] = useState<{ open: boolean; msg: string; sev: "success" | "error" | "info" }>({
+    open: false,
+    msg: "",
+    sev: "info",
+  });
+
+  // delete confirm
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+
+  const fetchSystemDetail = async () => {
+    try {
+      // TODO: fetch ข้อมูลจริง
+      // mock ค่าเริ่มต้น
+      setForm({
+        webKey: "PERSONNEL",
+        name: "ระบบบุคลากร",
+        description: "รายละเอียดระบบบุคลากร",
+      });
+    } catch (e) {
+      console.error(e);
+      setSnack({ open: true, msg: "ไม่สามารถโหลดข้อมูลได้", sev: "error" });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchSystemDetail();
+  }, []);
+
+  const handleChange =
+    (key: keyof FormState) =>
+    (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+      setForm((s) => ({ ...s, [key]: e.target.value }));
+      setErrors((s) => ({ ...s, [key]: "" }));
+    };
+
+  const validate = () => {
+    const err: Partial<FormState> = {};
+    if (!form.webKey?.trim()) err.webKey = "กรุณาใส่ข้อมูล คีย์ระบบ!";
+    if (!form.name?.trim()) err.name = "กรุณาใส่ข้อมูล ชื่อ!";
+    setErrors(err);
+    return Object.keys(err).length === 0;
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!validate()) return;
+    try {
+      // await fetch('/api/system/:id', { method: 'PUT', body: JSON.stringify(form) })
+      setSnack({ open: true, msg: "บันทึกการแก้ไขสำเร็จ", sev: "success" });
+    } catch (e) {
+      console.error(e);
+      setSnack({ open: true, msg: "แก้ไขไม่สำเร็จ", sev: "error" });
+    }
+  };
+
+  const handleDelete = async () => {
+    try {
+      setDeleting(true);
+      // await fetch('/api/system/:id', { method: 'DELETE' })
+      setSnack({ open: true, msg: "ลบสำเร็จ", sev: "success" });
+      router.push("/dashboard/integrations");
+    } catch (e) {
+      console.error(e);
+      setSnack({ open: true, msg: "ลบไม่สำเร็จ", sev: "error" });
+    } finally {
+      setDeleting(false);
+      setConfirmOpen(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <Box sx={{ p: 2 }}>
+        <Skeleton variant="text" width={280} height={28} />
+        <Skeleton variant="text" width={220} />
+        <Skeleton variant="rectangular" height={360} sx={{ mt: 2 }} />
+      </Box>
+    );
+  }
+
+  return (
+    <Box sx={{ p: 2 }}>
+      {/* Breadcrumbs + Title */}
+      <Stack spacing={1} sx={{ mb: 1 }}>
+        <Typography variant="h6" sx={{ fontSize: 18, fontWeight: 600 }}>
+          ระบบที่เปิดใช้งาน
+        </Typography>
+        <Breadcrumbs>
+          <Link
+            component="button"
+            underline="hover"
+            color="inherit"
+            onClick={() => {
+              setLoading(true);
+              router.push("/dashboard/integrations");
+            }}
+          >
+            ระบบที่เปิดใช้งาน
+          </Link>
+          <Typography color="text.primary">รายละเอียด</Typography>
+        </Breadcrumbs>
+      </Stack>
+
+      {/* Form */}
+      <Paper sx={{ p: 2 }}>
+        <Box component="form" noValidate onSubmit={handleSubmit}>
+          <Grid container spacing={2}>
+            <Grid size = {{xs: 12,md :6}}>
+              <TextField
+                label="คีย์ระบบ"
+                fullWidth
+                value={form.webKey}
+                onChange={handleChange("webKey")}
+                error={!!errors.webKey}
+                helperText={errors.webKey}
+              />
+            </Grid>
+
+            <Grid size = {{xs: 12,md :6}}>
+              <TextField
+                label="ชื่อ"
+                fullWidth
+                value={form.name}
+                onChange={handleChange("name")}
+                error={!!errors.name}
+                helperText={errors.name}
+              />
+            </Grid>
+
+            <Grid size = {{xs: 12,md :6}}>
+              <TextField
+                label="รายละเอียด"
+                fullWidth
+                multiline
+                minRows={4}
+                value={form.description}
+                onChange={handleChange("description")}
+              />
+            </Grid>
+
+            <Grid size = {{xs: 12}}>
+              <Stack direction="row" spacing={1} justifyContent="flex-end">
+                <Button
+                  type="submit"
+                  variant="contained"
+                  sx={{
+                    bgcolor: ThemButtonColor?.Reject ?? "#1976d2",
+                    "&:hover": { opacity: 0.9, bgcolor: ThemButtonColor?.Reject ?? "#1976d2" },
+                  }}
+                >
+                  แก้ไข
+                </Button>
+                <Button
+                  variant="contained"
+                  onClick={() => setConfirmOpen(true)}
+                  sx={{
+                    bgcolor: ThemButtonColor?.Delete ?? "#d32f2f",
+                    "&:hover": { opacity: 0.9, bgcolor: ThemButtonColor?.Delete ?? "#d32f2f" },
+                  }}
+                >
+                  ลบ
+                </Button>
+              </Stack>
+            </Grid>
+          </Grid>
+        </Box>
+      </Paper>
+
+      {/* Delete confirm */}
+      <Dialog open={confirmOpen} onClose={() => (!deleting ? setConfirmOpen(false) : null)}>
+        <DialogTitle>ยืนยันการลบ</DialogTitle>
+        <DialogContent>
+          <DialogContentText>คุณต้องการลบระบบนี้หรือไม่?</DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setConfirmOpen(false)} disabled={deleting}>
+            ยกเลิก
+          </Button>
+          <Button onClick={handleDelete} variant="contained" disabled={deleting}>
+            {deleting ? "กำลังลบ..." : "ลบ"}
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Snackbar */}
+      <Snackbar
+        open={snack.open}
+        autoHideDuration={3000}
+        onClose={() => setSnack((s) => ({ ...s, open: false }))}
+        anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+      >
+        <Alert
+          onClose={() => setSnack((s) => ({ ...s, open: false }))}
+          severity={snack.sev}
+          variant="filled"
+          sx={{ width: "100%" }}
+        >
+          {snack.msg}
+        </Alert>
+      </Snackbar>
+    </Box>
+  );
+}

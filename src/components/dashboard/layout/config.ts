@@ -1,6 +1,7 @@
 import type { NavItemConfig } from '@/types/nav';
 import { paths } from '@/paths';
 
+
 export const navItems = [
   { key: 'home', title: 'หน้าหลัก', href: paths.dashboard.main, icon: 'chart-pie' },
    {
@@ -11,12 +12,12 @@ export const navItems = [
       { key: 'users-all',     
         title: 'ผู้ใช้งานทั้งหมด',  
         href: paths.dashboard.usersAll,     
-        icon: 'user-list',
+        icon: 'user',
         matcher: { type: 'startsWith', href: paths.dashboard.usersAll } },
       { key: 'users-pending', 
         title: 'ผู้ใช้งานรออนุมัติ', 
         href: paths.dashboard.usersPending, 
-        icon: 'user-clock' },
+        icon: 'user' },
     ],
   },
   

@@ -202,7 +202,7 @@ const [open, setOpen] = React.useState(active || childActive);
             cursor: 'not-allowed',
           }),
           ...(active && {
-            bgcolor: 'var(--NavItem-active-background)',
+            bgcolor: '#22333b',
             color: 'var(--NavItem-active-color)',
           }),
         }}
