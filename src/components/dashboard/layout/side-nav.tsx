@@ -27,15 +27,15 @@ export function SideNav(): React.JSX.Element {
   return (
     <Box
       sx={{
-        '--SideNav-background': 'var(--mui-palette-neutral-950)',
+        '--SideNav-background': '#000000',
         '--SideNav-color': 'var(--mui-palette-common-white)',
-        '--NavItem-color': 'var(--mui-palette-neutral-300)',
+        '--NavItem-color': '#ffffff',
         '--NavItem-hover-background': 'rgba(255, 255, 255, 0.04)',
         '--NavItem-active-background': 'var(--mui-palette-primary-main)',
-        '--NavItem-active-color': 'var(--mui-palette-primary-contrastText)',
+        '--NavItem-active-color': '#ffffff',
         '--NavItem-disabled-color': 'var(--mui-palette-neutral-500)',
-        '--NavItem-icon-color': 'var(--mui-palette-neutral-400)',
-        '--NavItem-icon-active-color': 'var(--mui-palette-primary-contrastText)',
+        '--NavItem-icon-color': '#ffffff',
+        '--NavItem-icon-active-color': '#ffffff',
         '--NavItem-icon-disabled-color': 'var(--mui-palette-neutral-600)',
         bgcolor: 'var(--SideNav-background)',
         color: 'var(--SideNav-color)',
@@ -56,8 +56,8 @@ export function SideNav(): React.JSX.Element {
         <Box component={RouterLink} href={paths.home} sx={{ display: 'inline-flex',textDecoration: "none", // ❌ เอาเส้นใต้ลิงก์ออก
       color: "white",         }}>
           {/*<Logo color="light" height={32} width={122} />*/}
-          <Icons.MonitorCog width={60} height={60} color="#ffffff" />
-          <Typography variant="h6" sx={{ mt: 1, mb: 0,ml:1, fontSize: 18, fontWeight: 'bold' }}>
+          <Icons.MonitorCog width={70} height={70} color="#ffffff" />
+          <Typography variant="h6" sx={{ mt: 0.5, mb: 0,ml:1, fontSize: 20, fontWeight: 'bold' }}>
           ระบบอินทราเน็ต
           ภายในองค์กร
           </Typography>
@@ -104,7 +104,7 @@ function NavItem({
   matcher,
   pathname,
   title,
-  items, // 👈 เพิ่มรับ items ด้วย
+  items, 
 }: NavItemConfig & { pathname: string }): React.JSX.Element {
   const active = isNavItemActive({ disabled, external, href, matcher, pathname });
   const Icon = icon ? navIcons[icon] : null;
@@ -151,7 +151,7 @@ const [open, setOpen] = React.useState(active || childActive);
               weight={active ? 'fill' : undefined}
             />
           )}
-          <Typography component="span" sx={{ flex: 1, fontSize: '0.875rem', fontWeight: 500 }}>
+          <Typography component="span" sx={{ flex: 1, fontSize: 16 }}>
             {title}
           </Typography>
           <ChevronDown
@@ -214,7 +214,7 @@ const [open, setOpen] = React.useState(active || childActive);
             weight={active ? 'fill' : undefined}
           />
         )}
-        <Typography component="span" sx={{ fontSize: '0.875rem', fontWeight: 500 }}>
+        <Typography component="span" sx={{ fontSize: 16}}>
           {title}
         </Typography>
       </Box>

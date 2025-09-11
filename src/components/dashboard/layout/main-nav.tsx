@@ -28,7 +28,7 @@ export function MainNav(): React.JSX.Element {
         component="header"
         sx={{
           borderBottom: '1px solid var(--mui-palette-divider)',
-          backgroundColor: 'var(--mui-palette-background-paper)',
+          backgroundColor: '#22333b',
           position: 'sticky',
           top: 0,
           zIndex: 'var(--mui-zIndex-appBar)',

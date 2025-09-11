@@ -11,6 +11,7 @@ interface LayoutProps {
   children: React.ReactNode;
 }
 
+
 export default function Layout({ children }: LayoutProps): React.JSX.Element {
   return (
     <AuthGuard>
@@ -39,7 +40,7 @@ export default function Layout({ children }: LayoutProps): React.JSX.Element {
         <Box sx={{ display: 'flex', flex: '1 1 auto', flexDirection: 'column', pl: { lg: 'var(--SideNav-width)' } }}>
           <MainNav />
           <main>
-            <Container maxWidth="xl" sx={{ py: '64px' }}>
+            <Container maxWidth={false} disableGutters sx={{ py: 0, px: 0 }}>
               {children}
             </Container>
           </main>
