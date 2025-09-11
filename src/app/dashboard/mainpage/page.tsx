@@ -44,7 +44,10 @@ export default function Page(): React.JSX.Element {
       </Grid>
 
       <Grid container spacing={2} alignItems="center">
-          <Grid size={{ xs :12 , sm: 6}}>
+          <Grid size={{ xs :12 , sm: 6}}   sx={{
+    backgroundColor: '#ffffff', // ✅ ใส่ที่นี่
+    borderRadius: 1,
+  }}>
             <TextField
               fullWidth
               name="thaiName"
@@ -52,6 +55,7 @@ export default function Page(): React.JSX.Element {
               value={formValues.thaiName}
               onChange={handleChange}
               size="small"
+              
             />
           </Grid>
           <Grid size={{ xs :12 , sm: 6}}>
