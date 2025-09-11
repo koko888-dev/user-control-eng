@@ -21,6 +21,8 @@ import { TasksProgress } from '@/components/dashboard/overview/tasks-progress';
 import { TotalCustomers } from '@/components/dashboard/overview/total-customers';
 import { TotalProfit } from '@/components/dashboard/overview/total-profit';
 import { Traffic } from '@/components/dashboard/overview/traffic';
+import { useRouter } from 'next/navigation';
+import { paths } from '@/paths';
 
 
 
@@ -30,7 +32,11 @@ export default function Page(): React.JSX.Element {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormValues({ ...formValues, [e.target.name]: e.target.value });
   };
+  const router = useRouter();
 
+  const handleLoginClick = () => {
+    router.push(paths.auth.signIn); // ← ใช้ paths ได้เลย
+  };
   return (
     <Box sx={{ p: 10 }}>
     <Stack direction="column" spacing={2} sx={{ width: '100%' }}>
@@ -80,7 +86,7 @@ export default function Page(): React.JSX.Element {
         }}
       >
         
-        <TotalCustomers diff={16} trend="down" sx={{ height: '100%' }} value="ผู้ใช้งานระบบ" />
+        <TotalCustomers diff={16} trend="down" sx={{ height: '100%' }} value="ผู้ใช้งานระบบ" onLoginClick={handleLoginClick} />
       </Grid>
       
       <Grid
@@ -91,7 +97,7 @@ export default function Page(): React.JSX.Element {
         }}
       >
 
-        <TotalCustomers diff={16} trend="down" sx={{ height: '100%' }} value="ผู้ดูเเลระบบ" />
+        <TotalCustomers diff={16} trend="down" sx={{ height: '100%' }} value="ผู้ดูเเลระบบ" onLoginClick={handleLoginClick} />
       </Grid>
 
       <Grid size={{xs: 12}}>
@@ -107,7 +113,7 @@ export default function Page(): React.JSX.Element {
           xs: 12,
         }}
       >
-        <TotalCustomers diff={16} trend="down" sx={{ height: '100%' }} value="ผู้ใช้งานระบบ" />
+        <TotalCustomers diff={16} trend="down" sx={{ height: '100%' }} value="ผู้ใช้งานระบบ" onLoginClick={handleLoginClick} />
       </Grid>
 
       <Grid
@@ -117,7 +123,7 @@ export default function Page(): React.JSX.Element {
           xs: 12,
         }}
       >
-        <TotalCustomers diff={16} trend="down" sx={{ height: '100%' }} value="ผู้ดูเเลระบบ" />
+        <TotalCustomers diff={16} trend="down" sx={{ height: '100%' }} value="ผู้ดูเเลระบบ" onLoginClick={handleLoginClick} />
       </Grid>
 
       <Grid
@@ -127,7 +133,7 @@ export default function Page(): React.JSX.Element {
           xs: 12,
         }}
       >
-        <TotalCustomers diff={16} trend="down" sx={{ height: '100%' }} value="ผู้อนุมัติอันดับที่ 1" />
+        <TotalCustomers diff={16} trend="down" sx={{ height: '100%' }} value="ผู้อนุมัติอันดับที่ 1" onLoginClick={handleLoginClick} />
       </Grid>
 
       <Grid
@@ -137,7 +143,7 @@ export default function Page(): React.JSX.Element {
           xs: 12,
         }}
       >
-        <TotalCustomers diff={16} trend="down" sx={{ height: '100%' }} value="ผู้อนุมัติอันดับที่ 2" />
+        <TotalCustomers diff={16} trend="down" sx={{ height: '100%' }} value="ผู้อนุมัติอันดับที่ 2" onLoginClick={handleLoginClick} />
       </Grid>
       
       <Grid size={{xs: 12}}>
@@ -153,7 +159,7 @@ export default function Page(): React.JSX.Element {
           xs: 12,
         }}
       >
-        <TotalCustomers diff={16} trend="down" sx={{ height: '100%' }} value="ผู้ใช้งานระบบ" />
+        <TotalCustomers diff={16} trend="down" sx={{ height: '100%' }} value="ผู้ใช้งานระบบ" onLoginClick={handleLoginClick} />
       </Grid>
 
       <Grid
@@ -163,7 +169,7 @@ export default function Page(): React.JSX.Element {
           xs: 12,
         }}
       >
-        <TotalCustomers diff={16} trend="down" sx={{ height: '100%' }} value="ผู้ดูเเลระบบ" />
+        <TotalCustomers diff={16} trend="down" sx={{ height: '100%' }} value="ผู้ดูเเลระบบ" onLoginClick={handleLoginClick} />
       </Grid>
 
       <Grid
@@ -173,7 +179,7 @@ export default function Page(): React.JSX.Element {
           xs: 12,
         }}
       >
-        <TotalCustomers diff={16} trend="down" sx={{ height: '100%' }} value="ผู้อนุมัติอันดับที่ 1" />
+        <TotalCustomers diff={16} trend="down" sx={{ height: '100%' }} value="ผู้อนุมัติอันดับที่ 1" onLoginClick={handleLoginClick} />
       </Grid>
 
       <Grid
@@ -183,7 +189,7 @@ export default function Page(): React.JSX.Element {
           xs: 12,
         }}
       >
-        <TotalCustomers diff={16} trend="down" sx={{ height: '100%' }} value="ผู้อนุมัติอันดับที่ 2" />
+        <TotalCustomers diff={16} trend="down" sx={{ height: '100%' }} value="ผู้อนุมัติอันดับที่ 2" onLoginClick={handleLoginClick} />
       </Grid>
     
       
