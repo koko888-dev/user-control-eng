@@ -493,8 +493,3 @@ export default function PendingApprovalUserIndexPage() {
     </Box>
   );
 }
-
-
-
-
-
